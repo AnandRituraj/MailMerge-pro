@@ -10,6 +10,7 @@ A professional web application for sending personalized emails to multiple recip
 - Send personalized emails to multiple recipients
 - View sending results and delivery status
 - Modern, responsive UI
+- Secure: email credentials are never stored on the server
 
 ## Technology Stack
 
@@ -38,6 +39,7 @@ mailmerge-pro/
 ├── server/               # Backend Node.js application
 │   ├── src/              # Source files
 │   │   └── index.js      # Express server and API endpoints
+│   ├── .env              # Environment variables for port config (not in repo)
 │   └── package.json      # Backend dependencies
 │
 └── .gitignore            # Git ignore file
@@ -48,6 +50,7 @@ mailmerge-pro/
 ### Prerequisites
 
 - Node.js (v14+) and npm installed
+- Email account (Gmail or Outlook) for sending emails
 
 ### Setup Instructions
 
@@ -64,8 +67,18 @@ cd ../client
 npm install
 ```
 
-3. Start the development servers:
-   Open your browser and navigate to `http://localhost:5000` to access the backend server.
+3. Configure server port (optional):
+
+   - By default, the server runs on port 5000
+   - To change the port, create a `server/.env` file with:
+
+   ```
+   PORT=5001
+   ```
+
+   - Make sure the "proxy" field in `client/package.json` matches this port
+
+4. Start the development servers:
 
 ```bash
 # Start the backend server (from the server directory)
@@ -77,7 +90,7 @@ cd ../client
 npm start
 ```
 
-4. Open your browser and navigate to `http://localhost:3000`
+5. Open your browser and navigate to `http://localhost:3000`
 
 ## Usage Guide
 
@@ -95,12 +108,22 @@ npm start
 
 3. **Review and Send**:
 
+   - Enter your email credentials (these are used only for the current session and not stored)
    - Check your email template and recipient list
    - Click "Send Emails" to send personalized emails to all recipients
 
 4. **View Results**:
    - See which emails were sent successfully
    - Option to resend to failed recipients
+
+## Security
+
+This application prioritizes security by:
+
+- Never storing email credentials on the server
+- Using email credentials only for the current session
+- Passing credentials securely via HTTPS
+- Not saving sent emails or their content
 
 ## Development
 
@@ -112,6 +135,8 @@ The client is built with React and uses Material UI for the user interface. The 
 
 The server is built with Express and uses Nodemailer to send emails. It exposes API endpoints for sending emails and parsing recipient data.
 
-## License
+### Environment Variables
 
-MIT
+The server uses only one environment variable:
+
+- `PORT`: The port on which the server runs (default: 5000)
