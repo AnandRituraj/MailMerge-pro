@@ -194,7 +194,3 @@ For the deployed version:
 - **Backend Connection Failed**: The backend server might be in sleep mode (free tier on Render). The first request may take a few seconds to wake it up.
 - **File Upload Issues**: Make sure CSV files are properly formatted with "name,email" on each line
 - **Browser Compatibility**: The application works best on modern browsers (Chrome, Firefox, Safari, Edge)
-
-## License
-
-MIT
