@@ -13,6 +13,7 @@ import {
 	Alert,
 } from '@mui/material';
 import LockIcon from '@mui/icons-material/Lock';
+import config from '../config';
 
 const EmailCredentialsForm = ({ emailConfig, setEmailData }) => {
 	const [email, setEmail] = useState(emailConfig?.email || '');
@@ -49,15 +50,31 @@ const EmailCredentialsForm = ({ emailConfig, setEmailData }) => {
 		setTestStatus({ status: 'testing', message: 'Testing connection...' });
 
 		try {
-			const response = await fetch('/api/test-email-connection', {
+			// Add a simple test first to check connectivity
+			const testResponse = await fetch(`${config.API_URL}/api/test`, {
+				method: 'GET',
+				headers: {
+					'Accept': 'application/json',
+				},
+			});
+
+			console.log('Test response:', await testResponse.json());
+
+			// Then proceed with the actual request
+			const response = await fetch(`${config.API_URL}/api/test-email-connection`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
+					'Accept': 'application/json',
 				},
 				body: JSON.stringify({ email, password, service }),
+				mode: 'cors',
+				credentials: 'include',
 			});
 
+			console.log('Status code:', response.status);
 			const data = await response.json();
+			console.log('Response data:', data);
 
 			if (response.ok) {
 				setTestStatus({ status: 'success', message: data.message });
@@ -65,6 +82,7 @@ const EmailCredentialsForm = ({ emailConfig, setEmailData }) => {
 				setTestStatus({ status: 'error', message: data.message });
 			}
 		} catch (error) {
+			console.error('Connection error:', error);
 			setTestStatus({
 				status: 'error',
 				message: 'Error testing connection: ' + error.message

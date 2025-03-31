@@ -9,8 +9,17 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middleware
-app.use(cors());
+// Middleware with specific CORS configuration
+app.use(cors({
+    origin: [
+        'http://localhost:3000',                // Local development
+        'https://mailmerge-pro.vercel.app',     // Primary Vercel domain
+        /\.vercel\.app$/                        // Any Vercel subdomain
+    ],
+    methods: ['GET', 'POST', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true
+}));
 app.use(express.json());
 
 // Email testing endpoint
@@ -163,6 +172,17 @@ app.post('/api/send-emails', async (req, res) => {
 // Server health check endpoint
 app.get('/api/health', (req, res) => {
     res.status(200).json({ status: 'Server is running' });
+});
+
+// Simple test endpoint that accepts both GET and POST
+app.all('/api/test', (req, res) => {
+    res.status(200).json({
+        message: 'API is accessible',
+        method: req.method,
+        headers: req.headers,
+        query: req.query,
+        body: req.body
+    });
 });
 
 // Start server
