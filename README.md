@@ -1,29 +1,53 @@
-# Email Sender App
+# MailMerge Pro
 
-A web application for sending personalized emails to multiple recipients. The app allows you to create an email template with name placeholders and automatically sends customized emails to each recipient.
+A professional web application for sending personalized emails to multiple recipients. The app allows you to create email templates with dynamic placeholders and automatically sends customized emails to each recipient.
 
 ## Features
 
 - Add recipients individually or upload CSV/JSON file with recipient information
-- Create email templates with name placeholders (`{name}`)
+- Create email templates with dynamic placeholders (`{name}`)
 - Preview emails before sending
 - Send personalized emails to multiple recipients
-- View sending results
+- View sending results and delivery status
+- Modern, responsive UI
 
-## Technologies
+## Technology Stack
 
-- **Frontend**: React, Material-UI
-- **Backend**: Node.js, Express
-- **Email**: Nodemailer
+- **Frontend**:
+  - React 18
+  - Material UI v5
+  - Axios for API requests
+- **Backend**:
+  - Node.js
+  - Express
+  - Nodemailer for email sending
+  - CORS for cross-origin support
+
+## Project Structure
+
+```
+mailmerge-pro/
+├── client/               # Frontend React application
+│   ├── public/           # Static files
+│   ├── src/              # Source files
+│   │   ├── components/   # React components
+│   │   ├── App.js        # Main application component
+│   │   └── index.js      # Entry point
+│   └── package.json      # Frontend dependencies
+│
+├── server/               # Backend Node.js application
+│   ├── src/              # Source files
+│   │   └── index.js      # Express server and API endpoints
+│   └── package.json      # Backend dependencies
+│
+└── .gitignore            # Git ignore file
+```
 
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js and npm installed
-- Email account (Gmail or Outlook)
-- For Gmail: You need to generate an app password (see setup instructions)
-- For Outlook: You need your regular password
+- Node.js (v14+) and npm installed
 
 ### Setup Instructions
 
@@ -40,55 +64,19 @@ cd ../client
 npm install
 ```
 
-3. Configure email credentials:
-
-   - Edit the `server/.env` file with your email service and credentials:
-
-   For Gmail:
-
-   ```
-   PORT=5000
-   EMAIL_SERVICE=gmail
-   EMAIL_USER=your-email@gmail.com
-   EMAIL_PASSWORD=your-app-password
-   ```
-
-   For Outlook:
-
-   ```
-   PORT=5000
-   EMAIL_SERVICE=outlook
-   EMAIL_USER=your-outlook-email@outlook.com
-   EMAIL_PASSWORD=your-outlook-password
-   ```
-
-   **Note for Gmail users**:
-
-   - You need to use an "App Password" rather than your regular password
-   - Go to your Google Account > Security > 2-Step Verification > App passwords
-   - Create a new app password for "Mail" and use it in the .env file
-
-   **Note for Outlook users**:
-
-   - You can use your regular Outlook password
-   - If you have 2FA enabled, you may need to create an app password
-   - Go to your Microsoft Account > Security > Advanced security options > App passwords
-
-4. Start the server:
+3. Start the development servers:
 
 ```bash
+# Start the backend server (from the server directory)
 cd server
 npm run dev
-```
 
-5. Start the client:
-
-```bash
-cd client
+# Start the frontend development server (from the client directory)
+cd ../client
 npm start
 ```
 
-6. Open your browser and navigate to `http://localhost:3000`
+4. Open your browser and navigate to `http://localhost:3000`
 
 ## Usage Guide
 
@@ -102,7 +90,7 @@ npm start
 
    - Enter the email subject
    - Write your email template using `{name}` as a placeholder for recipient names
-   - Preview how your email will look
+   - Preview how your email will look for each recipient
 
 3. **Review and Send**:
 
@@ -111,7 +99,17 @@ npm start
 
 4. **View Results**:
    - See which emails were sent successfully
-   - Option to send more emails
+   - Option to resend to failed recipients
+
+## Development
+
+### Frontend
+
+The client is built with React and uses Material UI for the user interface. The proxy is configured to forward API requests to the backend server running on port 5001.
+
+### Backend
+
+The server is built with Express and uses Nodemailer to send emails. It exposes API endpoints for sending emails and parsing recipient data.
 
 ## License
 
