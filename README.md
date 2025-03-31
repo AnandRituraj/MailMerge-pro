@@ -65,6 +65,7 @@ npm install
 ```
 
 3. Start the development servers:
+   Open your browser and navigate to `http://localhost:5000` to access the backend server.
 
 ```bash
 # Start the backend server (from the server directory)
