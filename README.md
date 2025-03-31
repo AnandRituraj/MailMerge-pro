@@ -2,6 +2,13 @@
 
 A professional web application for sending personalized emails to multiple recipients. The app allows you to create email templates with dynamic placeholders and automatically sends customized emails to each recipient.
 
+## Live Demo
+
+The application is now deployed and available online:
+
+- **Frontend**: [https://mailmerge-pro.vercel.app](https://mailmerge-pro.vercel.app)
+- **Backend**: Hosted on Render
+
 ## Features
 
 - Add recipients individually or upload CSV/JSON file with recipient information
@@ -45,7 +52,9 @@ mailmerge-pro/
 └── .gitignore            # Git ignore file
 ```
 
-## Getting Started
+## Local Development
+
+If you want to run the application locally instead of using the deployed version, follow these steps:
 
 ### Prerequisites
 
@@ -116,6 +125,31 @@ npm start
    - See which emails were sent successfully
    - Option to resend to failed recipients
 
+## Gmail Setup for Sending Emails
+
+To send emails using your Gmail account, you'll need to create an App Password:
+
+1. Go to your [Google Account](https://myaccount.google.com/)
+2. Select **Security**
+3. Under "Signing in to Google," select **2-Step Verification** (must be enabled)
+4. At the bottom of the page, select **App passwords**
+5. Select **Mail** as the app and **Other** as the device (name it "MailMerge Pro")
+6. Click **Generate**
+7. Use the generated 16-character code as your password in the MailMerge Pro app
+
+## Deployment
+
+The application is deployed using:
+
+- **Frontend**: [Vercel](https://vercel.com) - Provides continuous deployment from the main branch
+- **Backend**: [Render](https://render.com) - Hosts the Node.js server
+
+### Deployment Configuration
+
+- The frontend and backend are deployed separately
+- CORS is configured to allow communication between the two services
+- The frontend is configured to connect to the backend using environment variables
+
 ## Security
 
 This application prioritizes security by:
@@ -137,6 +171,30 @@ The server is built with Express and uses Nodemailer to send emails. It exposes 
 
 ### Environment Variables
 
-The server uses only one environment variable:
+For local development, the server uses only one environment variable:
 
 - `PORT`: The port on which the server runs (default: 5000)
+
+For the deployed version:
+
+- The backend service on Render is configured with the appropriate environment variables
+- The frontend on Vercel uses build-time configuration to connect to the backend
+
+## Troubleshooting
+
+### Email Connection Issues
+
+- **Gmail Users**: Make sure you're using an App Password, not your regular password
+- **Authentication Failed**: Double-check your email and password
+- **Less Secure Apps**: For some email providers, you may need to enable "Less Secure Apps" access
+- **Connection Timeout**: The email server might be temporarily unavailable, try again later
+
+### Application Issues
+
+- **Backend Connection Failed**: The backend server might be in sleep mode (free tier on Render). The first request may take a few seconds to wake it up.
+- **File Upload Issues**: Make sure CSV files are properly formatted with "name,email" on each line
+- **Browser Compatibility**: The application works best on modern browsers (Chrome, Firefox, Safari, Edge)
+
+## License
+
+MIT

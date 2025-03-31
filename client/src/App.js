@@ -15,14 +15,12 @@ import ReviewAndSend from './components/ReviewAndSend';
 import ResultsScreen from './components/ResultsScreen';
 import EmailCredentialsForm from './components/EmailCredentialsForm';
 import config from './config';
-import HealthCheck from './components/HealthCheck';
 
 const steps = ['Email Account', 'Recipients', 'Email Template', 'Review & Send'];
 
 function App() {
     const [activeStep, setActiveStep] = useState(0);
     const [loading, setLoading] = useState(false);
-    const [showHealthCheck, setShowHealthCheck] = useState(false);
     const [emailData, setEmailData] = useState({
         recipients: [],
         emailTemplate: '',
@@ -149,17 +147,6 @@ function App() {
                 <Typography variant="h4" component="h1" align="center" gutterBottom>
                     MailMerge Pro
                 </Typography>
-                <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
-                    <Button
-                        size="small"
-                        onClick={() => setShowHealthCheck(!showHealthCheck)}
-                        color="primary"
-                    >
-                        {showHealthCheck ? 'Hide Server Health' : 'Check Server Health'}
-                    </Button>
-                </Box>
-
-                {showHealthCheck && <HealthCheck />}
 
                 <Paper sx={{ p: 3, mb: 3 }}>
                     {activeStep < 4 ? (

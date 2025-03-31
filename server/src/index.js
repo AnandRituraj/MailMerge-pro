@@ -174,17 +174,6 @@ app.get('/api/health', (req, res) => {
     res.status(200).json({ status: 'Server is running' });
 });
 
-// Simple test endpoint that accepts both GET and POST
-app.all('/api/test', (req, res) => {
-    res.status(200).json({
-        message: 'API is accessible',
-        method: req.method,
-        headers: req.headers,
-        query: req.query,
-        body: req.body
-    });
-});
-
 // Start server
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
