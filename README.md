@@ -6,7 +6,7 @@ A professional web application for sending personalized emails to multiple recip
 
 The application is now deployed and available online:
 
-- **Frontend**: [https://mailmerge-pro.vercel.app](https://mailmerge-pro.vercel.app)
+- **Frontend**: https://mailmerge-pro.vercel.app/
 - **Backend**: Hosted on Render
 
 ## Features
