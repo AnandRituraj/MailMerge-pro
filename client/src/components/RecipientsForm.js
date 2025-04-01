@@ -58,8 +58,6 @@ const RecipientsForm = ({ recipients, setEmailData }) => {
 			.map(e => e.trim().replace(/,+$/, '')) // Remove trailing commas for each email
 			.filter(e => e);
 
-		console.log('Validating emails:', { original: emailString, cleaned: cleanString, parsed: emails });
-
 		if (emails.length === 0) return { valid: false, emails: [] };
 
 		// Check if all emails are valid
@@ -215,7 +213,6 @@ const RecipientsForm = ({ recipients, setEmailData }) => {
 				if (recipientsAdded === 0) {
 					// Special processing for multi-line email addresses
 					const content2 = content.replace(/\r\n/g, '\n'); // Normalize line endings
-					console.log("Processing CSV content...");
 
 					let companyEmails = [];
 
@@ -226,11 +223,8 @@ const RecipientsForm = ({ recipients, setEmailData }) => {
 					let i = 0;
 					let processingMultilineEmails = false;
 
-					console.log("Total lines in CSV:", lines.length);
-
 					while (i < lines.length) {
 						const line = lines[i].trim();
-						console.log(`Processing line ${i}: ${line}`);
 
 						// If we find a line that appears to be just an email
 						if (line.includes('@') && !line.includes(',@') && !line.startsWith('"')) {
@@ -239,7 +233,6 @@ const RecipientsForm = ({ recipients, setEmailData }) => {
 							const cleanEmail = line.trim().replace(/,+$/, '').replace(/"+$/, '');
 							if (currentCompany && validateEmail(cleanEmail)) {
 								emails.push(cleanEmail);
-								console.log(`Added standalone email: ${cleanEmail} to company: ${currentCompany}`);
 								processingMultilineEmails = true;
 							}
 							i++;
@@ -248,139 +241,150 @@ const RecipientsForm = ({ recipients, setEmailData }) => {
 
 						// If we hit a new company line but we were processing multiline emails
 						if (line.startsWith('"') && processingMultilineEmails) {
-							processingMultilineEmails = false;
-						}
-
-						if (line.startsWith('"') && line.includes('",')) {
-							// This is a new company entry
-							// Add previous company if exists
+							// Save the current company before moving on
 							if (currentCompany && emails.length > 0) {
 								companyEmails.push({
 									name: currentCompany,
 									emails: emails
 								});
-								console.log(`Added company: ${currentCompany} with ${emails.length} emails`);
 							}
 
-							// Extract company name and first email
-							const parts = line.match(/"([^"]+)","?([^"]+)"?/) ||
-								line.match(/"([^"]+)",([^"]+)/);
+							// Reset for new company
+							emails = [];
+							currentCompany = null;
+							processingMultilineEmails = false;
+						}
 
-							if (parts && parts.length >= 3) {
-								currentCompany = parts[1];
-								// Clean first email of quotes and commas
-								const firstEmail = parts[2].replace(/["]/g, '').replace(/,+$/, '').trim();
-								console.log(`New company: ${currentCompany}, First email: ${firstEmail}`);
-								emails = [];
-								if (validateEmail(firstEmail)) {
-									emails.push(firstEmail);
-								}
-							} else {
-								// Just company name
-								currentCompany = line.replace(/"/g, '').trim();
-								console.log(`New company with no email: ${currentCompany}`);
-								emails = [];
+						// Try to match standard CSV format: "Company Name",email@example.com
+						// or multiline format: "Company Name",firstemail@example.com,
+						const match = line.match(/^"([^"]+)"\s*,\s*([^,\s]+@[^,\s]+)/);
+						if (match) {
+							// If we already had a company in progress, save it first
+							if (currentCompany && emails.length > 0) {
+								companyEmails.push({
+									name: currentCompany,
+									emails: emails
+								});
 							}
-						} else if (line && !line.startsWith('"')) {
-							// This is a continuation email line or just a standalone email
-							const cleanEmail = line.replace(/["]/g, '').replace(/,+$/, '').trim();
-							console.log(`Potential email line: ${cleanEmail}`);
-							if (cleanEmail && validateEmail(cleanEmail)) {
+
+							// Start a new company
+							currentCompany = match[1].trim();
+							const firstEmail = match[2].trim().replace(/,+$/, '');
+							emails = [firstEmail];
+							i++;
+							continue;
+						}
+
+						// Check for company name only: "Company Name",
+						const nameOnlyMatch = line.match(/^"([^"]+)"\s*,\s*$/);
+						if (nameOnlyMatch) {
+							currentCompany = nameOnlyMatch[1].trim();
+							emails = [];
+							i++;
+							continue;
+						}
+
+						// Check for any line that might be an email (no quotes, but has @ symbol)
+						if (line.includes('@') && !line.startsWith('"')) {
+							const cleanEmail = line.trim().replace(/,+$/, '');
+							if (validateEmail(cleanEmail)) {
 								emails.push(cleanEmail);
-								console.log(`Added email: ${cleanEmail}`);
 							}
 						}
+
 						i++;
 					}
 
-					// Add the last company
+					// Add the last company if we have one
 					if (currentCompany && emails.length > 0) {
 						companyEmails.push({
 							name: currentCompany,
 							emails: emails
 						});
-						console.log(`Added final company: ${currentCompany} with ${emails.length} emails`);
 					}
 
-					console.log("Parsed company emails:", companyEmails);
-
 					// Convert to recipients format
-					const newRecipients = companyEmails.map(company => {
-						const validEmails = company.emails.filter(email => validateEmail(email));
-						return {
-							name: company.name,
-							email: validEmails.join(', '),
-							emails: validEmails
-						};
-					}).filter(r => r.emails.length > 0);
+					if (companyEmails.length > 0) {
+						const newRecipients = companyEmails.map(company => {
+							const { valid, emails: validEmails } = validateMultipleEmails(company.emails.join(','));
+							return {
+								name: company.name,
+								email: company.emails.join(', '),
+								emails: validEmails
+							};
+						});
 
-					// Add debug output for troubleshooting
-					console.log("Final parsed recipients:", newRecipients);
-
-					if (newRecipients.length > 0) {
+						// Add to state
 						setEmailData((prev) => ({
 							...prev,
 							recipients: [...prev.recipients, ...newRecipients],
 						}));
 						recipientsAdded = newRecipients.length;
-					} else {
-						// Fallback to original parser if no multiline entries are found
-						const lines = content.split('\n');
-						const newRecipients = lines
-							.filter(line => line.trim())
-							.map(line => {
-								// Enhanced CSV parsing to handle quoted fields
-								let name, email;
+						setImportAlert(true);
+					}
+				}
 
-								// Check if there are quoted fields (for emails with commas)
-								if (line.includes('"')) {
-									// Match for pattern: name,"email1, email2, etc"
-									// Use a more flexible regex that will work even with spaces around the quotes
-									const match = line.match(/(.*?),\s*"(.*?)"\s*$/);
-									if (match && match.length >= 3) {
-										name = match[1].trim();
-										email = match[2].trim();
-										console.log('Quoted field detected:', { line, name, email });
-									} else {
-										// Fallback to simple split if quote format is incorrect
-										const parts = line.split(',');
-										name = parts[0].trim();
-										// Join remaining parts as email (in case there are unquoted commas in email)
-										email = parts.slice(1).join(',').trim();
-										// Remove any lingering quotes
-										email = email.replace(/"/g, '');
-										console.log('Quote format incorrect, using fallback:', { line, name, email });
-									}
-								} else {
-									// Simple comma split for regular entries
-									const parts = line.split(',');
-									name = parts[0].trim();
-									// Join remaining parts as email (in case there are commas in email)
-									email = parts.slice(1).join(',').trim();
-									console.log('Regular entry:', { line, name, email });
+				// If no recipients were added, try standard CSV parsing
+				if (recipientsAdded === 0) {
+					const lines = content.split('\n').filter(line => line.trim());
+					const newRecipients = [];
+
+					for (const line of lines) {
+						// Skip header lines
+						if (line.toLowerCase().includes('name') && line.toLowerCase().includes('email')) continue;
+
+						// Check for quoted fields - format: "Name with, comma",email@example.com
+						const quotedMatch = line.match(/"([^"]+)"\s*,\s*(.+)/);
+						if (quotedMatch) {
+							const name = quotedMatch[1].trim();
+							let email = quotedMatch[2].trim();
+
+							// Handle quoted email values too: "Name","email1,email2"
+							if (email.startsWith('"') && email.endsWith('"')) {
+								email = email.substring(1, email.length - 1);
+							}
+
+							// If format is incorrect, fallback to simpler parsing
+							if (!name || !email) {
+								const parts = line.split(',').map(part => part.trim().replace(/"/g, ''));
+								if (parts.length >= 2) {
+									newRecipients.push({
+										name: parts[0],
+										email: parts.slice(1).join(', ')
+									});
 								}
-
-								// Validate and process multiple email addresses
-								const { valid, emails } = validateMultipleEmails(email || '');
-								console.log('Email validation result:', { email, valid, emails });
-								return {
-									name,
-									email: email || '',
-									emails: valid ? emails : (validateEmail(email) ? [email] : [])
-								};
-							})
-							.filter(({ name, emails }) => name && emails.length > 0);
-
-						if (newRecipients.length > 0) {
-							setEmailData((prev) => ({
-								...prev,
-								recipients: [...prev.recipients, ...newRecipients],
-							}));
-							recipientsAdded = newRecipients.length;
+							} else {
+								newRecipients.push({ name, email });
+							}
 						} else {
-							alert('No valid recipients found in the file. Please check the format.');
-							return;
+							// Simple CSV format: name,email
+							const parts = line.split(',').map(part => part.trim().replace(/"/g, ''));
+							if (parts.length >= 2) {
+								newRecipients.push({
+									name: parts[0],
+									email: parts.slice(1).join(', ')
+								});
+							}
 						}
+					}
+
+					// Process recipients to add emails array
+					const processedRecipients = newRecipients.map(item => {
+						const { valid, emails: validEmails } = validateMultipleEmails(item.email);
+						return {
+							...item,
+							emails: valid ? validEmails : []
+						};
+					});
+
+					// Add to state
+					if (processedRecipients.length > 0) {
+						setEmailData((prev) => ({
+							...prev,
+							recipients: [...prev.recipients, ...processedRecipients],
+						}));
+						recipientsAdded = processedRecipients.length;
+						setImportAlert(true);
 					}
 				}
 
@@ -390,8 +394,7 @@ const RecipientsForm = ({ recipients, setEmailData }) => {
 					setTimeout(() => setImportAlert(false), 5000); // Hide after 5 seconds
 				}
 			} catch (error) {
-				console.error('Error parsing file:', error);
-				alert('Error parsing file. Please check the format.');
+				alert(`Error parsing file: ${error.message}`);
 			}
 		};
 

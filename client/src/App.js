@@ -72,7 +72,6 @@ function App() {
 			setResults(data);
 			handleNext(); // Move to results screen
 		} catch (error) {
-			console.error('Error sending emails:', error);
 			alert(`Error: ${error.message}`);
 		} finally {
 			setLoading(false);

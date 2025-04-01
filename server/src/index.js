@@ -76,7 +76,6 @@ app.post('/api/test-email-connection', async (req, res) => {
 			message: 'Connection successful! Your email credentials are working.'
 		});
 	} catch (error) {
-		console.error('Email connection test failed:', error);
 		res.status(401).json({
 			success: false,
 			message: `Connection failed: ${error.message}`
@@ -198,7 +197,6 @@ app.post('/api/send-emails', async (req, res) => {
 			results
 		});
 	} catch (error) {
-		console.error('Error sending emails:', error);
 		res.status(500).json({
 			success: false,
 			message: 'Failed to send emails',
