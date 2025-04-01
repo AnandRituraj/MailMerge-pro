@@ -133,8 +133,8 @@ app.post('/api/send-emails', async (req, res) => {
 		for (const recipient of recipients) {
 			const { name, email } = recipient;
 
-			// Replace placeholder with recipient name
-			let personalizedEmail = emailTemplate.replace(/\{name\}/g, name);
+			// Replace placeholder with recipient name (wrapped in strong tags to make it bold)
+			let personalizedEmail = emailTemplate.replace(/\{name\}/g, `<strong>${name}</strong>`);
 
 			// Convert newlines to HTML line breaks
 			personalizedEmail = personalizedEmail.replace(/\n/g, '<br>');
