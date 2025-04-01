@@ -418,132 +418,157 @@ Alex Johnson,"alex@example.com;alex.personal@gmail.com;alex.work@company.com"`;
 	return (
 		<Box>
 			<Typography variant="h6" gutterBottom>
-				Add Recipients
+				Recipients
 			</Typography>
 
-			{/* Import alert notification */}
-			<Collapse in={importAlert}>
-				<Alert severity="success" sx={{ mb: 2 }} onClose={() => setImportAlert(false)}>
-					Recipients imported successfully! Multiple email addresses have been properly detected and will be used as BCC recipients. You can edit any recipient by clicking the edit icon.
-				</Alert>
-			</Collapse>
-
 			<Paper elevation={0} sx={{ p: 2, mb: 3, bgcolor: '#f8f8f8' }}>
-				<Typography variant="body2" sx={{ mb: 1 }}>
-					Add recipients individually or upload a CSV/JSON file with the format:
-					<br />
-					CSV (single email): <strong>name,email</strong> (one per line)
-					<br />
-					CSV (multiple emails): <strong>name,"email1@example.com,email2@example.com"</strong> (make sure to use quotes)
-					<br />
-					<strong>Important:</strong> When using multiple emails in CSV, the entire email list must be enclosed in quotes.
-					<br />
-					JSON: array of objects with name and email properties
+				<Typography variant="body2">
+					Add recipients for your email campaign. You can add recipients manually
+					or import from a CSV/JSON file.
 					<br /><br />
-					You can add multiple email addresses per recipient by separating them with commas or semicolons.
-					<br />
-					Example: john@example.com, john.work@example.com
-					<br /><br />
-					The first email will be the primary recipient and additional emails will be sent as BCC.
-					<br /><br />
-					After importing, you can edit any recipient by clicking the edit icon.
+					You can add multiple email addresses for a single recipient by separating them with commas or semicolons.
+					The first email will be the primary recipient, and additional emails will be added as BCC recipients.
 				</Typography>
+			</Paper>
 
-				<Box sx={{ display: 'flex', mb: 2, flexWrap: 'wrap', gap: 2 }}>
+			<Box sx={{ mb: 4 }}>
+				<Box sx={{
+					display: 'flex',
+					flexDirection: { xs: 'column', sm: 'row' },
+					gap: 2,
+					mb: 3
+				}}>
+					<TextField
+						label="Name"
+						variant="outlined"
+						value={name}
+						onChange={(e) => setName(e.target.value)}
+						error={!!nameError}
+						helperText={nameError}
+						fullWidth
+						sx={{ flex: 1 }}
+					/>
+					<TextField
+						label="Email Address(es)"
+						variant="outlined"
+						value={email}
+						onChange={(e) => setEmail(e.target.value)}
+						error={!!emailError}
+						helperText={emailError || "Separate multiple emails with commas or semicolons"}
+						fullWidth
+						sx={{ flex: 2 }}
+					/>
+				</Box>
+
+				<Box sx={{
+					display: 'flex',
+					flexDirection: { xs: 'column', sm: 'row' },
+					gap: 2,
+					justifyContent: 'flex-start',
+					'& .MuiButton-root': {
+						width: { xs: '100%', sm: 'auto' }
+					}
+				}}>
+					<Button
+						variant="contained"
+						color="primary"
+						onClick={handleAddRecipient}
+						startIcon={<AddIcon />}
+					>
+						Add Recipient
+					</Button>
+
 					<Button
 						variant="outlined"
 						component="label"
+						startIcon={<DownloadIcon sx={{ transform: 'rotate(180deg)' }} />}
 					>
-						Upload File
+						Import CSV/JSON
 						<input
 							type="file"
-							accept=".csv,.json"
 							hidden
+							accept=".csv,.json"
 							onChange={handleFileUpload}
 						/>
 					</Button>
 
 					<Button
-						variant="outlined"
-						startIcon={<DownloadIcon />}
+						variant="text"
 						onClick={downloadSampleCSV}
+						startIcon={<DownloadIcon />}
 					>
 						Download Sample CSV
 					</Button>
-
-					<Typography variant="body2" sx={{ alignSelf: 'center' }}>
-						Accepted formats: .csv, .json
-					</Typography>
 				</Box>
-			</Paper>
-
-			<Box sx={{ mb: 3 }}>
-				<TextField
-					label="Name"
-					variant="outlined"
-					fullWidth
-					margin="normal"
-					value={name}
-					onChange={(e) => setName(e.target.value)}
-					error={!!nameError}
-					helperText={nameError}
-				/>
-				<TextField
-					label="Email"
-					variant="outlined"
-					fullWidth
-					margin="normal"
-					value={email}
-					onChange={(e) => setEmail(e.target.value)}
-					error={!!emailError}
-					helperText={emailError || "For multiple emails, separate them with commas or semicolons"}
-					placeholder="email@example.com, alternate@example.com"
-				/>
-				<Button
-					variant="contained"
-					color="primary"
-					startIcon={<AddIcon />}
-					onClick={handleAddRecipient}
-					sx={{ mt: 2 }}
-				>
-					Add Recipient
-				</Button>
 			</Box>
 
-			<Typography variant="h6" gutterBottom>
-				Recipients List ({recipients.length})
+			<Collapse in={importAlert} sx={{ mb: 3 }}>
+				<Alert
+					severity="info"
+					onClose={() => setImportAlert(false)}
+				>
+					<Typography variant="body2">
+						Import complete! CSV/JSON data has been added to your recipients list.
+					</Typography>
+				</Alert>
+			</Collapse>
+
+			<Typography variant="subtitle1" gutterBottom>
+				Recipient List ({recipients.length})
 			</Typography>
 
 			{recipients.length > 0 ? (
-				<Paper variant="outlined" sx={{ mb: 3 }}>
-					<List>
+				<Paper variant="outlined">
+					<List sx={{
+						maxHeight: { xs: '300px', sm: '400px' },
+						overflow: 'auto'
+					}}>
 						{recipients.map((recipient, index) => (
 							<React.Fragment key={index}>
-								<ListItem>
+								<ListItem sx={{
+									py: { xs: 2, sm: 1.5 },
+									flexDirection: { xs: 'column', sm: 'row' },
+									alignItems: { xs: 'flex-start', sm: 'center' },
+									position: 'relative'
+								}}>
 									<ListItemText
 										primary={recipient.name}
 										secondary={
-											<Tooltip title={recipient.email} placement="bottom-start">
-												<span>{recipient.email}</span>
-											</Tooltip>
+											recipient.emails && recipient.emails.length > 1
+												? (
+													<React.Fragment>
+														<span style={{ wordBreak: 'break-all' }}>{recipient.emails[0]}</span> + {recipient.emails.length - 1} more
+													</React.Fragment>
+												)
+												: <span style={{ wordBreak: 'break-all' }}>{recipient.email}</span>
 										}
+										sx={{
+											pr: { xs: 0, sm: 8 },
+											mb: { xs: 2, sm: 0 },
+											'& .MuiTypography-root': {
+												wordBreak: 'break-word'
+											}
+										}}
 									/>
-									<ListItemSecondaryAction sx={{ display: 'flex', alignItems: 'center' }}>
-										<IconButton
-											edge="end"
-											aria-label="edit"
-											onClick={() => handleEditRecipient(index)}
-											sx={{ mr: 1 }}
-										>
-											<EditIcon />
-										</IconButton>
-										<IconButton
-											edge="end"
-											aria-label="delete"
-											onClick={() => handleRemoveRecipient(index)}
-										>
-											<DeleteIcon />
-										</IconButton>
+									<ListItemSecondaryAction sx={{
+										position: { xs: 'relative', sm: 'absolute' },
+										top: { xs: 'auto', sm: '50%' },
+										transform: { xs: 'none', sm: 'translateY(-50%)' },
+										right: { xs: 0, sm: 16 },
+										display: 'flex',
+										width: { xs: '100%', sm: 'auto' },
+										justifyContent: { xs: 'flex-start', sm: 'flex-end' }
+									}}>
+										<Tooltip title="Edit recipient">
+											<IconButton edge="end" aria-label="edit" onClick={() => handleEditRecipient(index)}>
+												<EditIcon />
+											</IconButton>
+										</Tooltip>
+										<Tooltip title="Delete recipient">
+											<IconButton edge="end" aria-label="delete" onClick={() => handleRemoveRecipient(index)}>
+												<DeleteIcon />
+											</IconButton>
+										</Tooltip>
 									</ListItemSecondaryAction>
 								</ListItem>
 								{index < recipients.length - 1 && <Divider />}
@@ -553,12 +578,23 @@ Alex Johnson,"alex@example.com;alex.personal@gmail.com;alex.work@company.com"`;
 				</Paper>
 			) : (
 				<Typography variant="body2" color="textSecondary">
-					No recipients added yet.
+					No recipients added yet. Add recipients manually or import from a file.
 				</Typography>
 			)}
 
-			{/* Edit Recipient Dialog */}
-			<Dialog open={editDialogOpen} onClose={handleCloseEditDialog}>
+			<Dialog
+				open={editDialogOpen}
+				onClose={handleCloseEditDialog}
+				fullWidth
+				maxWidth="sm"
+				PaperProps={{
+					sx: {
+						width: '100%',
+						m: { xs: 1, sm: 2, md: 3 },
+						maxHeight: '90vh'
+					}
+				}}
+			>
 				<DialogTitle>Edit Recipient</DialogTitle>
 				<DialogContent>
 					<TextField
@@ -572,21 +608,27 @@ Alex Johnson,"alex@example.com;alex.personal@gmail.com;alex.work@company.com"`;
 						helperText={editNameError}
 					/>
 					<TextField
-						label="Email"
+						label="Email Address(es)"
 						variant="outlined"
 						fullWidth
 						margin="normal"
 						value={editEmail}
 						onChange={(e) => setEditEmail(e.target.value)}
 						error={!!editEmailError}
-						helperText={editEmailError || "For multiple emails, separate them with commas or semicolons"}
-						placeholder="email@example.com, alternate@example.com"
+						helperText={editEmailError || "Separate multiple emails with commas or semicolons"}
 					/>
 				</DialogContent>
-				<DialogActions>
+				<DialogActions sx={{
+					p: 2,
+					flexDirection: { xs: 'column', sm: 'row' },
+					'& > button': {
+						m: 0.5,
+						width: { xs: '100%', sm: 'auto' }
+					}
+				}}>
 					<Button onClick={handleCloseEditDialog}>Cancel</Button>
 					<Button onClick={handleSaveEdit} variant="contained" color="primary">
-						Save
+						Save Changes
 					</Button>
 				</DialogActions>
 			</Dialog>

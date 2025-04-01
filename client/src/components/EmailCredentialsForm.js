@@ -149,12 +149,19 @@ const EmailCredentialsForm = ({ emailConfig, setEmailData }) => {
 					</Paper>
 				)}
 
-				<Box sx={{ display: 'flex', gap: 2, mt: 3 }}>
+				<Box sx={{
+					display: 'flex',
+					flexDirection: { xs: 'column', sm: 'row' },
+					gap: 2,
+					mt: 3
+				}}>
 					<Button
 						variant="contained"
 						color="primary"
 						type="submit"
 						startIcon={<LockIcon />}
+						fullWidth={true}
+						sx={{ width: { xs: '100%', sm: 'auto' } }}
 					>
 						Save Credentials
 					</Button>
@@ -163,6 +170,8 @@ const EmailCredentialsForm = ({ emailConfig, setEmailData }) => {
 						variant="outlined"
 						onClick={handleTestConnection}
 						type="button"
+						fullWidth={true}
+						sx={{ width: { xs: '100%', sm: 'auto' } }}
 					>
 						Test Connection
 					</Button>

@@ -182,7 +182,14 @@ const EmailTemplateForm = ({ emailTemplate, subject, setEmailData, attachments }
                 required
             />
 
-            <Box sx={{ mt: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Box sx={{
+                mt: 2,
+                display: 'flex',
+                flexDirection: { xs: 'column', sm: 'row' },
+                justifyContent: { xs: 'flex-start', sm: 'space-between' },
+                alignItems: { xs: 'flex-start', sm: 'center' },
+                gap: { xs: 2, sm: 0 }
+            }}>
                 <FormControlLabel
                     control={
                         <Switch
@@ -198,6 +205,8 @@ const EmailTemplateForm = ({ emailTemplate, subject, setEmailData, attachments }
                     variant="outlined"
                     onClick={() => setOpenSignatureDialog(true)}
                     disabled={!includeSignature}
+                    fullWidth={false}
+                    sx={{ width: { xs: '100%', sm: 'auto' } }}
                 >
                     Edit Signature
                 </Button>
@@ -208,6 +217,13 @@ const EmailTemplateForm = ({ emailTemplate, subject, setEmailData, attachments }
                 onClose={() => setOpenSignatureDialog(false)}
                 fullWidth
                 maxWidth="md"
+                PaperProps={{
+                    sx: {
+                        width: '100%',
+                        m: { xs: 1, sm: 2, md: 3 },
+                        maxHeight: '90vh'
+                    }
+                }}
             >
                 <DialogTitle>Edit Your Email Signature</DialogTitle>
                 <DialogContent>
@@ -242,7 +258,14 @@ const EmailTemplateForm = ({ emailTemplate, subject, setEmailData, attachments }
                             : "Paste your HTML signature here"}
                     />
                 </DialogContent>
-                <DialogActions>
+                <DialogActions sx={{
+                    p: 2,
+                    flexDirection: { xs: 'column', sm: 'row' },
+                    '& > button': {
+                        m: 0.5,
+                        width: { xs: '100%', sm: 'auto' }
+                    }
+                }}>
                     <Button onClick={() => setOpenSignatureDialog(false)}>Cancel</Button>
                     <Button onClick={handleSaveSignature} variant="contained" color="primary">
                         Save Signature
@@ -255,7 +278,13 @@ const EmailTemplateForm = ({ emailTemplate, subject, setEmailData, attachments }
                     <Typography variant="h6" gutterBottom>
                         Preview
                     </Typography>
-                    <Paper variant="outlined" sx={{ p: 2 }}>
+                    <Paper
+                        variant="outlined"
+                        sx={{
+                            p: { xs: 1.5, sm: 2 },
+                            overflowX: 'auto'
+                        }}
+                    >
                         <Typography variant="subtitle1" gutterBottom>
                             Subject: {subject}
                         </Typography>
@@ -263,14 +292,28 @@ const EmailTemplateForm = ({ emailTemplate, subject, setEmailData, attachments }
                             <Typography
                                 variant="body1"
                                 component="div"
-                                sx={{ whiteSpace: 'pre-wrap' }}
+                                sx={{
+                                    whiteSpace: 'pre-wrap',
+                                    wordBreak: 'break-word',
+                                    '& a': {
+                                        wordBreak: 'break-all'
+                                    }
+                                }}
                                 dangerouslySetInnerHTML={{
                                     __html: processTemplatePreview(emailTemplate)
                                 }}
                             />
                             {includeSignature && signatureHtml && (
                                 <Box
-                                    sx={{ mt: 2, pt: 2, borderTop: '1px solid #e0e0e0' }}
+                                    sx={{
+                                        mt: 2,
+                                        pt: 2,
+                                        borderTop: '1px solid #e0e0e0',
+                                        wordBreak: 'break-word',
+                                        '& a': {
+                                            wordBreak: 'break-all'
+                                        }
+                                    }}
                                     dangerouslySetInnerHTML={{
                                         __html: signatureType === 'plain'
                                             ? formatPlainTextSignature(signatureHtml)

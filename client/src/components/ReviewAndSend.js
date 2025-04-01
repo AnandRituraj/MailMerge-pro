@@ -39,7 +39,7 @@ const ReviewAndSend = ({ emailData, loading, onSend }) => {
                     Email Account
                 </Typography>
                 <Paper variant="outlined" sx={{ p: 2 }}>
-                    <Typography variant="subtitle1">
+                    <Typography variant="subtitle1" sx={{ wordBreak: 'break-all' }}>
                         From: {emailConfig?.email}
                     </Typography>
                     <Typography variant="body2" color="textSecondary">
@@ -52,15 +52,21 @@ const ReviewAndSend = ({ emailData, loading, onSend }) => {
                 <Typography variant="h6" gutterBottom>
                     Email Template
                 </Typography>
-                <Paper variant="outlined" sx={{ p: 2 }}>
-                    <Typography variant="subtitle1" gutterBottom>
+                <Paper variant="outlined" sx={{ p: { xs: 1.5, sm: 2 } }}>
+                    <Typography variant="subtitle1" gutterBottom sx={{ wordBreak: 'break-word' }}>
                         Subject: {subject}
                     </Typography>
                     <Box>
                         <Typography
                             variant="body1"
                             component="div"
-                            sx={{ whiteSpace: 'pre-wrap' }}
+                            sx={{
+                                whiteSpace: 'pre-wrap',
+                                wordBreak: 'break-word',
+                                '& a': {
+                                    wordBreak: 'break-all'
+                                }
+                            }}
                             dangerouslySetInnerHTML={{
                                 __html: emailTemplate
                                     .replace(/{name}/g, '<strong>[Recipient Name]</strong>')
@@ -68,7 +74,15 @@ const ReviewAndSend = ({ emailData, loading, onSend }) => {
                         />
                         {signature && (
                             <Box
-                                sx={{ mt: 2, pt: 2, borderTop: '1px solid #e0e0e0' }}
+                                sx={{
+                                    mt: 2,
+                                    pt: 2,
+                                    borderTop: '1px solid #e0e0e0',
+                                    wordBreak: 'break-word',
+                                    '& a': {
+                                        wordBreak: 'break-all'
+                                    }
+                                }}
                                 dangerouslySetInnerHTML={{ __html: signature }}
                             />
                         )}
@@ -83,7 +97,10 @@ const ReviewAndSend = ({ emailData, loading, onSend }) => {
 
                 {recipients.length > 0 ? (
                     <Paper variant="outlined">
-                        <List sx={{ maxHeight: '300px', overflow: 'auto' }}>
+                        <List sx={{
+                            maxHeight: { xs: '200px', sm: '300px' },
+                            overflow: 'auto'
+                        }}>
                             {recipients.map((recipient, index) => (
                                 <React.Fragment key={index}>
                                     <ListItem>
@@ -93,17 +110,20 @@ const ReviewAndSend = ({ emailData, loading, onSend }) => {
                                                 <>
                                                     {recipient.emails && recipient.emails.length > 1 ? (
                                                         <>
-                                                            <strong>{recipient.emails[0]}</strong> (primary)
+                                                            <strong style={{ wordBreak: 'break-all' }}>{recipient.emails[0]}</strong> (primary)
                                                             <br />
                                                             <Typography variant="caption" component="span">
                                                                 + {recipient.emails.length - 1} additional {recipient.emails.length - 1 === 1 ? 'email' : 'emails'} (BCC)
                                                             </Typography>
                                                         </>
                                                     ) : (
-                                                        recipient.email
+                                                        <span style={{ wordBreak: 'break-all' }}>{recipient.email}</span>
                                                     )}
                                                 </>
                                             }
+                                            primaryTypographyProps={{
+                                                sx: { wordBreak: 'break-word' }
+                                            }}
                                         />
                                     </ListItem>
                                     {index < recipients.length - 1 && <Divider />}
@@ -131,6 +151,15 @@ const ReviewAndSend = ({ emailData, loading, onSend }) => {
                                     icon={<AttachFileIcon />}
                                     label={attachment.filename}
                                     variant="outlined"
+                                    sx={{
+                                        maxWidth: '100%',
+                                        '& .MuiChip-label': {
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                            whiteSpace: 'nowrap',
+                                            maxWidth: { xs: '180px', sm: '250px' }
+                                        }
+                                    }}
                                 />
                             ))}
                         </Box>
@@ -146,7 +175,11 @@ const ReviewAndSend = ({ emailData, loading, onSend }) => {
                     startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <SendIcon />}
                     onClick={onSend}
                     disabled={loading || recipients.length === 0 || !emailTemplate || !subject || !emailConfig}
-                    sx={{ px: 4, py: 1.5 }}
+                    sx={{
+                        px: { xs: 2, sm: 4 },
+                        py: { xs: 1, sm: 1.5 },
+                        width: { xs: '100%', sm: 'auto' }
+                    }}
                 >
                     {loading ? 'Sending...' : 'Send Emails'}
                 </Button>

@@ -91,12 +91,18 @@ const AttachmentsForm = ({ attachments, setEmailData }) => {
                 </Typography>
             </Paper>
 
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+            <Box sx={{
+                display: 'flex',
+                flexDirection: { xs: 'column', sm: 'row' },
+                alignItems: { xs: 'flex-start', sm: 'center' },
+                gap: 2,
+                mb: 2
+            }}>
                 <Button
                     variant="contained"
                     component="label"
                     startIcon={<AttachFileIcon />}
-                    sx={{ mr: 2 }}
+                    sx={{ width: { xs: '100%', sm: 'auto' } }}
                 >
                     Add Attachments
                     <input
@@ -111,30 +117,56 @@ const AttachmentsForm = ({ attachments, setEmailData }) => {
                         label={fileError}
                         color="error"
                         onDelete={() => setFileError('')}
+                        sx={{ maxWidth: '100%', overflow: 'hidden' }}
                     />
                 )}
             </Box>
 
             {attachments.length > 0 && (
-                <List>
-                    {attachments.map((attachment, index) => (
-                        <ListItem key={index} divider>
-                            <ListItemText
-                                primary={attachment.filename}
-                                secondary={getFileSize(attachment.content)}
-                            />
-                            <ListItemSecondaryAction>
-                                <IconButton
-                                    edge="end"
-                                    aria-label="delete"
-                                    onClick={() => handleRemoveAttachment(index)}
-                                >
-                                    <DeleteIcon />
-                                </IconButton>
-                            </ListItemSecondaryAction>
-                        </ListItem>
-                    ))}
-                </List>
+                <Paper variant="outlined" sx={{ mb: 2 }}>
+                    <List disablePadding>
+                        {attachments.map((attachment, index) => (
+                            <ListItem
+                                key={index}
+                                divider
+                                sx={{
+                                    flexDirection: { xs: 'column', sm: 'row' },
+                                    alignItems: { xs: 'flex-start', sm: 'center' },
+                                    py: { xs: 2, sm: 1 }
+                                }}
+                            >
+                                <ListItemText
+                                    primary={attachment.filename}
+                                    secondary={getFileSize(attachment.content)}
+                                    primaryTypographyProps={{
+                                        sx: {
+                                            wordBreak: 'break-all'
+                                        }
+                                    }}
+                                    sx={{
+                                        mr: { xs: 0, sm: 2 },
+                                        mb: { xs: 1, sm: 0 },
+                                        width: { xs: '100%', sm: 'auto' }
+                                    }}
+                                />
+                                <ListItemSecondaryAction sx={{
+                                    top: { xs: 'auto', sm: '50%' },
+                                    transform: { xs: 'none', sm: 'translateY(-50%)' },
+                                    right: { xs: 0, sm: 16 },
+                                    bottom: { xs: 8, sm: 'auto' }
+                                }}>
+                                    <IconButton
+                                        edge="end"
+                                        aria-label="delete"
+                                        onClick={() => handleRemoveAttachment(index)}
+                                    >
+                                        <DeleteIcon />
+                                    </IconButton>
+                                </ListItemSecondaryAction>
+                            </ListItem>
+                        ))}
+                    </List>
+                </Paper>
             )}
         </Box>
     );

@@ -25,7 +25,10 @@ const ResultsScreen = ({ results, onReset }) => {
 					variant="outlined"
 					startIcon={<RestartAltIcon />}
 					onClick={onReset}
-					sx={{ mt: 2 }}
+					sx={{
+						mt: 2,
+						width: { xs: '100%', sm: 'auto' }
+					}}
 				>
 					Start Over
 				</Button>
@@ -44,7 +47,7 @@ const ResultsScreen = ({ results, onReset }) => {
 			<Paper
 				elevation={0}
 				sx={{
-					p: 3,
+					p: { xs: 2, sm: 3 },
 					mb: 3,
 					bgcolor: success ? '#e8f5e9' : '#ffebee',
 					borderRadius: 2
@@ -56,7 +59,7 @@ const ResultsScreen = ({ results, onReset }) => {
 					) : (
 						<ErrorIcon color="error" sx={{ mr: 1 }} />
 					)}
-					<Typography variant="h6">
+					<Typography variant="h6" sx={{ fontSize: { xs: '1.1rem', sm: '1.25rem' } }}>
 						{success ? 'Success!' : 'Error'}
 					</Typography>
 				</Box>
@@ -71,11 +74,21 @@ const ResultsScreen = ({ results, onReset }) => {
 						Sent Emails ({emailResults.length})
 					</Typography>
 					<Paper variant="outlined">
-						<List>
+						<List sx={{
+							maxHeight: { xs: '300px', sm: '400px' },
+							overflow: 'auto'
+						}}>
 							{emailResults.map((result, index) => (
 								<React.Fragment key={index}>
-									<ListItem>
-										<ListItemIcon>
+									<ListItem sx={{
+										py: { xs: 2, sm: 1 },
+										flexDirection: { xs: 'column', sm: 'row' },
+										alignItems: { xs: 'flex-start', sm: 'center' }
+									}}>
+										<ListItemIcon sx={{
+											minWidth: { xs: '32px', sm: '56px' },
+											mb: { xs: 1, sm: 0 }
+										}}>
 											{result.status === 'sent' || result.status === 'sent (BCC)' ? (
 												<CheckCircleIcon color="success" />
 											) : (
@@ -89,6 +102,9 @@ const ResultsScreen = ({ results, onReset }) => {
 													? 'Status: Sent (as BCC)'
 													: `Status: ${result.status}`
 											}
+											primaryTypographyProps={{
+												sx: { wordBreak: 'break-all' }
+											}}
 										/>
 									</ListItem>
 									{index < emailResults.length - 1 && <Divider />}
@@ -106,6 +122,11 @@ const ResultsScreen = ({ results, onReset }) => {
 					startIcon={<RestartAltIcon />}
 					onClick={onReset}
 					size="large"
+					sx={{
+						px: { xs: 2, sm: 4 },
+						py: { xs: 1, sm: 1.5 },
+						width: { xs: '100%', sm: 'auto' }
+					}}
 				>
 					Send More Emails
 				</Button>
