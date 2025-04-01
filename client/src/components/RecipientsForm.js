@@ -306,7 +306,7 @@ const RecipientsForm = ({ recipients, setEmailData }) => {
 					// Convert to recipients format
 					if (companyEmails.length > 0) {
 						const newRecipients = companyEmails.map(company => {
-							const { valid, emails: validEmails } = validateMultipleEmails(company.emails.join(','));
+							const { emails: validEmails } = validateMultipleEmails(company.emails.join(','));
 							return {
 								name: company.name,
 								email: company.emails.join(', '),
