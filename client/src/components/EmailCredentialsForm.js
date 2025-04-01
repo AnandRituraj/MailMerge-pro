@@ -35,7 +35,8 @@ const EmailCredentialsForm = ({ emailConfig, setEmailData }) => {
 		return Object.keys(newErrors).length === 0;
 	};
 
-	const handleSave = () => {
+	const handleSave = (e) => {
+		if (e) e.preventDefault();
 		if (validateForm()) {
 			setEmailData((prev) => ({
 				...prev,
@@ -44,7 +45,8 @@ const EmailCredentialsForm = ({ emailConfig, setEmailData }) => {
 		}
 	};
 
-	const handleTestConnection = async () => {
+	const handleTestConnection = async (e) => {
+		if (e) e.preventDefault();
 		if (!validateForm()) return;
 
 		setTestStatus({ status: 'testing', message: 'Testing connection...' });
@@ -86,77 +88,84 @@ const EmailCredentialsForm = ({ emailConfig, setEmailData }) => {
 				</Typography>
 			</Paper>
 
-			<FormControl fullWidth margin="normal" error={!!errors.service}>
-				<InputLabel id="email-service-label">Email Service</InputLabel>
-				<Select
-					labelId="email-service-label"
-					value={service}
-					label="Email Service"
-					onChange={(e) => setService(e.target.value)}
-				>
-					<MenuItem value="gmail">Gmail</MenuItem>
-					<MenuItem value="outlook">Outlook</MenuItem>
-					<MenuItem value="yahoo">Yahoo Mail</MenuItem>
-					<MenuItem value="hotmail">Hotmail</MenuItem>
-				</Select>
-				{errors.service && <FormHelperText>{errors.service}</FormHelperText>}
-			</FormControl>
+			<form onSubmit={handleSave} noValidate>
+				<FormControl fullWidth margin="normal" error={!!errors.service}>
+					<InputLabel id="email-service-label">Email Service</InputLabel>
+					<Select
+						labelId="email-service-label"
+						value={service}
+						label="Email Service"
+						onChange={(e) => setService(e.target.value)}
+					>
+						<MenuItem value="gmail" textValue="Gmail">Gmail</MenuItem>
+						<MenuItem value="outlook" textValue="Outlook">Outlook</MenuItem>
+						<MenuItem value="yahoo" textValue="Yahoo Mail">Yahoo Mail</MenuItem>
+						<MenuItem value="hotmail" textValue="Hotmail">Hotmail</MenuItem>
+					</Select>
+					{errors.service && <FormHelperText>{errors.service}</FormHelperText>}
+				</FormControl>
 
-			<TextField
-				label="Email Address"
-				variant="outlined"
-				fullWidth
-				margin="normal"
-				value={email}
-				onChange={(e) => setEmail(e.target.value)}
-				error={!!errors.email}
-				helperText={errors.email}
-				type="email"
-			/>
-
-			<TextField
-				label="Password"
-				variant="outlined"
-				fullWidth
-				margin="normal"
-				value={password}
-				onChange={(e) => setPassword(e.target.value)}
-				error={!!errors.password}
-				helperText={errors.password || (service === 'gmail' ? 'For Gmail, use an App Password from your Google Account' : '')}
-				type="password"
-			/>
-
-			{service === 'gmail' && (
-				<Paper elevation={0} sx={{ p: 2, my: 2, bgcolor: '#e8f4fd' }}>
-					<Typography variant="body2">
-						<strong>Gmail users:</strong> You need to use an App Password instead of your regular password.
-						<ol style={{ marginTop: '8px', paddingLeft: '20px' }}>
-							<li>Enable 2-Step Verification in your Google Account</li>
-							<li>Go to your Google Account → Security → App passwords</li>
-							<li>Create a new app password for "Mail"</li>
-							<li>Use that password here</li>
-						</ol>
-					</Typography>
-				</Paper>
-			)}
-
-			<Box sx={{ display: 'flex', gap: 2, mt: 3 }}>
-				<Button
-					variant="contained"
-					color="primary"
-					onClick={handleSave}
-					startIcon={<LockIcon />}
-				>
-					Save Credentials
-				</Button>
-
-				<Button
+				<TextField
+					label="Email Address"
 					variant="outlined"
-					onClick={handleTestConnection}
-				>
-					Test Connection
-				</Button>
-			</Box>
+					fullWidth
+					margin="normal"
+					value={email}
+					onChange={(e) => setEmail(e.target.value)}
+					error={!!errors.email}
+					helperText={errors.email}
+					type="email"
+					required
+					inputProps={{ 'aria-label': 'Email address' }}
+				/>
+
+				<TextField
+					label="Password"
+					variant="outlined"
+					fullWidth
+					margin="normal"
+					value={password}
+					onChange={(e) => setPassword(e.target.value)}
+					error={!!errors.password}
+					helperText={errors.password || (service === 'gmail' ? 'For Gmail, use an App Password from your Google Account' : '')}
+					type="password"
+					required
+					inputProps={{ 'aria-label': 'Password' }}
+				/>
+
+				{service === 'gmail' && (
+					<Paper elevation={0} sx={{ p: 2, my: 2, bgcolor: '#e8f4fd' }}>
+						<Typography variant="body2">
+							<strong>Gmail users:</strong> You need to use an App Password instead of your regular password.
+							<ol style={{ marginTop: '8px', paddingLeft: '20px' }}>
+								<li>Enable 2-Step Verification in your Google Account</li>
+								<li>Go to your Google Account → Security → App passwords</li>
+								<li>Create a new app password for "Mail"</li>
+								<li>Use that password here</li>
+							</ol>
+						</Typography>
+					</Paper>
+				)}
+
+				<Box sx={{ display: 'flex', gap: 2, mt: 3 }}>
+					<Button
+						variant="contained"
+						color="primary"
+						type="submit"
+						startIcon={<LockIcon />}
+					>
+						Save Credentials
+					</Button>
+
+					<Button
+						variant="outlined"
+						onClick={handleTestConnection}
+						type="button"
+					>
+						Test Connection
+					</Button>
+				</Box>
+			</form>
 
 			{testStatus && (
 				<Alert
