@@ -131,13 +131,27 @@ app.post('/api/send-emails', async (req, res) => {
 		// Process each recipient
 		const results = [];
 		for (const recipient of recipients) {
-			const { name, email } = recipient;
+			const { name, email, emails = [] } = recipient;
+
+			// Get list of emails (either from emails array or from single email)
+			const allEmails = emails.length > 0 ? emails : [email];
+
+			// Skip if no valid emails
+			if (allEmails.length === 0) continue;
+
+			// Use the first email as the primary recipient
+			const primaryEmail = allEmails[0];
+			// Use any additional emails as BCC recipients
+			const bccEmails = allEmails.slice(1);
 
 			// Replace placeholder with recipient name (wrapped in strong tags to make it bold)
 			let personalizedEmail = emailTemplate.replace(/\{name\}/g, `<strong>${name}</strong>`);
 
 			// Convert newlines to HTML line breaks
 			personalizedEmail = personalizedEmail.replace(/\n/g, '<br>');
+
+			// Convert URLs to clickable links
+			personalizedEmail = personalizedEmail.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1">$1</a>');
 
 			// Add signature if provided
 			if (signature) {
@@ -147,7 +161,8 @@ app.post('/api/send-emails', async (req, res) => {
 			// Prepare email data
 			const mailOptions = {
 				from: emailConfig.email,
-				to: email,
+				to: primaryEmail,
+				...(bccEmails.length > 0 && { bcc: bccEmails.join(', ') }),
 				subject,
 				html: personalizedEmail,
 				attachments: attachments ? attachments.map(attachment => ({
@@ -160,10 +175,20 @@ app.post('/api/send-emails', async (req, res) => {
 			// Send email with improved options for HTML content
 			const info = await transporter.sendMail(mailOptions);
 
+			// Add result for primary email
 			results.push({
-				email,
+				email: primaryEmail,
 				status: 'sent',
 				messageId: info.messageId,
+			});
+
+			// Add results for BCC emails
+			bccEmails.forEach(bccEmail => {
+				results.push({
+					email: bccEmail,
+					status: 'sent (BCC)',
+					messageId: info.messageId,
+				});
 			});
 		}
 

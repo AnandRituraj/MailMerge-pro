@@ -97,10 +97,10 @@ const EmailCredentialsForm = ({ emailConfig, setEmailData }) => {
 						label="Email Service"
 						onChange={(e) => setService(e.target.value)}
 					>
-						<MenuItem value="gmail" textValue="Gmail">Gmail</MenuItem>
-						<MenuItem value="outlook" textValue="Outlook">Outlook</MenuItem>
-						<MenuItem value="yahoo" textValue="Yahoo Mail">Yahoo Mail</MenuItem>
-						<MenuItem value="hotmail" textValue="Hotmail">Hotmail</MenuItem>
+						<MenuItem value="gmail">Gmail</MenuItem>
+						<MenuItem value="outlook">Outlook</MenuItem>
+						<MenuItem value="yahoo">Yahoo Mail</MenuItem>
+						<MenuItem value="hotmail">Hotmail</MenuItem>
 					</Select>
 					{errors.service && <FormHelperText>{errors.service}</FormHelperText>}
 				</FormControl>
@@ -116,6 +116,7 @@ const EmailCredentialsForm = ({ emailConfig, setEmailData }) => {
 					helperText={errors.email}
 					type="email"
 					required
+					autoComplete="username email"
 					inputProps={{ 'aria-label': 'Email address' }}
 				/>
 
@@ -130,12 +131,13 @@ const EmailCredentialsForm = ({ emailConfig, setEmailData }) => {
 					helperText={errors.password || (service === 'gmail' ? 'For Gmail, use an App Password from your Google Account' : '')}
 					type="password"
 					required
+					autoComplete="current-password"
 					inputProps={{ 'aria-label': 'Password' }}
 				/>
 
 				{service === 'gmail' && (
 					<Paper elevation={0} sx={{ p: 2, my: 2, bgcolor: '#e8f4fd' }}>
-						<Typography variant="body2">
+						<Typography variant="body2" component="div">
 							<strong>Gmail users:</strong> You need to use an App Password instead of your regular password.
 							<ol style={{ marginTop: '8px', paddingLeft: '20px' }}>
 								<li>Enable 2-Step Verification in your Google Account</li>

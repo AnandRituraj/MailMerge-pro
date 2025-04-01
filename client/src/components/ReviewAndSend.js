@@ -27,6 +27,10 @@ const ReviewAndSend = ({ emailData, loading, onSend }) => {
                 <Typography variant="body2">
                     Please review your email template and recipients before sending.
                     The emails will be personalized for each recipient using their name.
+                    URLs will automatically be converted to clickable links in the sent emails.
+                    <br /><br />
+                    For recipients with multiple email addresses, the first email will be the primary recipient
+                    and additional emails will be added as BCC recipients.
                 </Typography>
             </Paper>
 
@@ -85,7 +89,21 @@ const ReviewAndSend = ({ emailData, loading, onSend }) => {
                                     <ListItem>
                                         <ListItemText
                                             primary={recipient.name}
-                                            secondary={recipient.email}
+                                            secondary={
+                                                <>
+                                                    {recipient.emails && recipient.emails.length > 1 ? (
+                                                        <>
+                                                            <strong>{recipient.emails[0]}</strong> (primary)
+                                                            <br />
+                                                            <Typography variant="caption" component="span">
+                                                                + {recipient.emails.length - 1} additional {recipient.emails.length - 1 === 1 ? 'email' : 'emails'} (BCC)
+                                                            </Typography>
+                                                        </>
+                                                    ) : (
+                                                        recipient.email
+                                                    )}
+                                                </>
+                                            }
                                         />
                                     </ListItem>
                                     {index < recipients.length - 1 && <Divider />}

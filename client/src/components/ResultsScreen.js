@@ -76,7 +76,7 @@ const ResultsScreen = ({ results, onReset }) => {
 								<React.Fragment key={index}>
 									<ListItem>
 										<ListItemIcon>
-											{result.status === 'sent' ? (
+											{result.status === 'sent' || result.status === 'sent (BCC)' ? (
 												<CheckCircleIcon color="success" />
 											) : (
 												<ErrorIcon color="error" />
@@ -84,7 +84,11 @@ const ResultsScreen = ({ results, onReset }) => {
 										</ListItemIcon>
 										<ListItemText
 											primary={result.email}
-											secondary={`Status: ${result.status}`}
+											secondary={
+												result.status === 'sent (BCC)'
+													? 'Status: Sent (as BCC)'
+													: `Status: ${result.status}`
+											}
 										/>
 									</ListItem>
 									{index < emailResults.length - 1 && <Divider />}
