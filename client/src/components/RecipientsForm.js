@@ -597,8 +597,11 @@ Alex Johnson,"alex@example.com;alex.personal@gmail.com;alex.work@company.com"`;
 						maxHeight: '90vh'
 					}
 				}}
+				aria-labelledby="edit-recipient-dialog-title"
+				disableEnforceFocus={false}
+				keepMounted={false}
 			>
-				<DialogTitle>Edit Recipient</DialogTitle>
+				<DialogTitle id="edit-recipient-dialog-title">Edit Recipient</DialogTitle>
 				<DialogContent>
 					<TextField
 						label="Name"
@@ -609,6 +612,8 @@ Alex Johnson,"alex@example.com;alex.personal@gmail.com;alex.work@company.com"`;
 						onChange={(e) => setEditName(e.target.value)}
 						error={!!editNameError}
 						helperText={editNameError}
+						autoFocus
+						id="edit-recipient-name"
 					/>
 					<TextField
 						label="Email Address(es)"
@@ -619,6 +624,7 @@ Alex Johnson,"alex@example.com;alex.personal@gmail.com;alex.work@company.com"`;
 						onChange={(e) => setEditEmail(e.target.value)}
 						error={!!editEmailError}
 						helperText={editEmailError || "Separate multiple emails with commas or semicolons"}
+						id="edit-recipient-email"
 					/>
 				</DialogContent>
 				<DialogActions sx={{

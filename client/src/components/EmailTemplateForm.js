@@ -224,8 +224,11 @@ const EmailTemplateForm = ({ emailTemplate, subject, setEmailData, attachments }
                         maxHeight: '90vh'
                     }
                 }}
+                aria-labelledby="edit-signature-dialog-title"
+                disableEnforceFocus={false}
+                keepMounted={false}
             >
-                <DialogTitle>Edit Your Email Signature</DialogTitle>
+                <DialogTitle id="edit-signature-dialog-title">Edit Your Email Signature</DialogTitle>
                 <DialogContent>
                     <Box sx={{ mb: 3, mt: 1 }}>
                         <FormLabel component="legend">Signature Format</FormLabel>
@@ -256,6 +259,8 @@ const EmailTemplateForm = ({ emailTemplate, subject, setEmailData, attachments }
                         placeholder={signatureType === 'plain'
                             ? "Type your signature here\nExample:\nJohn Doe\nSales Manager\nEmail: john@example.com\nWebsite: www.example.com"
                             : "Paste your HTML signature here"}
+                        autoFocus
+                        id="signature-editor"
                     />
                 </DialogContent>
                 <DialogActions sx={{
