@@ -169,11 +169,6 @@ app.post('/api/send-emails', async (req, res) => {
     }
 });
 
-// Server health check endpoint
-app.get('/api/health', (req, res) => {
-    res.status(200).json({ status: 'Server is running' });
-});
-
 // Start server
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
