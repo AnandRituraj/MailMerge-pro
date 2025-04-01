@@ -13,10 +13,15 @@ The application is now deployed and available online:
 
 - Add recipients individually or upload CSV/JSON file with recipient information
 - Create email templates with dynamic placeholders (`{name}`)
+- Add multiple email addresses per recipient (first as main recipient, others as BCC)
+- Set up plain text or HTML email signatures
+- Auto-formatting of URLs and email addresses into clickable links
+- Add file attachments to your email campaigns (up to 10MB per file)
 - Preview emails before sending
 - Send personalized emails to multiple recipients
 - View sending results and delivery status
-- Modern, responsive UI
+- Fully responsive design that works on mobile, tablet, and desktop
+- Modern, accessible UI with improved keyboard navigation
 - Secure: email credentials are never stored on the server
 
 ## Technology Stack
@@ -24,6 +29,7 @@ The application is now deployed and available online:
 - **Frontend**:
   - React 18
   - Material UI v5
+  - Responsive design with flexbox layouts
   - Axios for API requests
 - **Backend**:
   - Node.js
@@ -103,27 +109,62 @@ npm start
 
 ## Usage Guide
 
-1. **Add Recipients**:
+1. **Configure Email Account**:
+
+   - Select your email service (Gmail, Outlook, Yahoo, Hotmail)
+   - Enter your email address and password
+   - For Gmail, you must use an App Password (see below)
+   - Test the connection to verify credentials
+
+2. **Add Recipients**:
 
    - Enter name and email manually and click "Add Recipient"
-   - Or upload a CSV file with format: `name,email` (one per line)
-   - Or upload a JSON file with format: `[{"name": "Name", "email": "email@example.com"}, ...]`
+   - Add multiple email addresses per recipient by separating with commas
+   - Upload a CSV file with format: `name,email` (one per line)
+   - Upload a JSON file with format: `[{"name": "Name", "email": "email@example.com"}, ...]`
 
-2. **Create Email Template**:
+3. **Create Email Template**:
 
    - Enter the email subject
    - Write your email template using `{name}` as a placeholder for recipient names
+   - Add URLs or email addresses that will automatically become clickable links
+   - Add a signature (plain text or HTML) with the toggle switch
+   - Add file attachments as needed
    - Preview how your email will look for each recipient
 
-3. **Review and Send**:
+4. **Review and Send**:
 
-   - Enter your email credentials (these are used only for the current session and not stored)
    - Check your email template and recipient list
+   - Review attachments if added
    - Click "Send Emails" to send personalized emails to all recipients
 
-4. **View Results**:
+5. **View Results**:
    - See which emails were sent successfully
-   - Option to resend to failed recipients
+   - Option to start over and send more emails
+
+## Multiple Email Addresses and BCC Recipients
+
+MailMerge Pro supports sending to multiple email addresses per recipient:
+
+- When adding multiple emails for one recipient, separate them with commas or semicolons
+- The first email in the list will be the primary recipient
+- Additional emails will be added as BCC recipients
+- This is useful for sending to people who have multiple email addresses or when you need to include additional stakeholders
+
+## Email Signatures
+
+You can now add signatures to your emails in two formats:
+
+- **Plain Text**: Enter plain text that will maintain your formatting, with automatic link detection
+- **HTML**: Paste HTML code for more complex signatures with images and formatting
+
+## Device Compatibility
+
+The application is fully responsive and works on:
+
+- **Desktop computers**: Optimized layout with side-by-side form elements
+- **Tablets**: Adaptive layout that adjusts to screen width
+- **Mobile phones**: Stacked layout for easy reading and interaction on small screens
 
 ## Gmail Setup for Sending Emails
 
@@ -194,3 +235,4 @@ For the deployed version:
 - **Backend Connection Failed**: The backend server might be in sleep mode (free tier on Render). The first request may take a few seconds to wake it up.
 - **File Upload Issues**: Make sure CSV files are properly formatted with "name,email" on each line
 - **Browser Compatibility**: The application works best on modern browsers (Chrome, Firefox, Safari, Edge)
+- **Mobile Display Issues**: If text appears too small on mobile, try using landscape orientation for better readability
