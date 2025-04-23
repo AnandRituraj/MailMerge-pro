@@ -14,7 +14,12 @@ import {
 import DeleteIcon from '@mui/icons-material/Delete';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 
-const AttachmentsForm = ({ attachments, setEmailData }) => {
+const AttachmentsForm = ({
+    attachments = [],
+    setEmailData = null,
+    onAttachmentUpload = null,
+    onRemoveAttachment = null
+}) => {
     const [fileError, setFileError] = useState('');
 
     // Maximum file size (10MB)
@@ -50,19 +55,31 @@ const AttachmentsForm = ({ attachments, setEmailData }) => {
 
         if (newAttachments.length) {
             Promise.all(newAttachments).then(processedAttachments => {
-                setEmailData(prev => ({
-                    ...prev,
-                    attachments: [...prev.attachments, ...processedAttachments]
-                }));
+                if (onAttachmentUpload) {
+                    // Use centralized handler if provided
+                    onAttachmentUpload(processedAttachments);
+                } else if (setEmailData) {
+                    // Fallback to direct state update
+                    setEmailData(prev => ({
+                        ...prev,
+                        attachments: [...prev.attachments, ...processedAttachments]
+                    }));
+                }
             });
         }
     };
 
-    const handleRemoveAttachment = (index) => {
-        setEmailData(prev => ({
-            ...prev,
-            attachments: prev.attachments.filter((_, i) => i !== index)
-        }));
+    const handleRemoveFile = (index) => {
+        if (onRemoveAttachment) {
+            // Use centralized handler if provided
+            onRemoveAttachment(index);
+        } else if (setEmailData) {
+            // Fallback to direct state update
+            setEmailData(prev => ({
+                ...prev,
+                attachments: prev.attachments.filter((_, i) => i !== index)
+            }));
+        }
     };
 
     const getFileSize = (base64String) => {
@@ -158,7 +175,7 @@ const AttachmentsForm = ({ attachments, setEmailData }) => {
                                     <IconButton
                                         edge="end"
                                         aria-label="delete"
-                                        onClick={() => handleRemoveAttachment(index)}
+                                        onClick={() => handleRemoveFile(index)}
                                     >
                                         <DeleteIcon />
                                     </IconButton>

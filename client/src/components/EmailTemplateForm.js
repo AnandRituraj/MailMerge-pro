@@ -55,7 +55,14 @@ const formatPlainTextSignature = (text) => {
     return htmlText;
 };
 
-const EmailTemplateForm = ({ emailTemplate, subject, setEmailData, attachments }) => {
+const EmailTemplateForm = ({
+    emailTemplate,
+    subject,
+    setEmailData,
+    attachments,
+    onAttachmentUpload,
+    onRemoveAttachment
+}) => {
     const [signatureHtml, setSignatureHtml] = useState('');
     const [includeSignature, setIncludeSignature] = useState(false);
     const [openSignatureDialog, setOpenSignatureDialog] = useState(false);
@@ -331,10 +338,12 @@ const EmailTemplateForm = ({ emailTemplate, subject, setEmailData, attachments }
                 </Box>
             )}
 
-            {/* Add AttachmentsForm component */}
+            {/* Add AttachmentsForm component with centralized handlers */}
             <AttachmentsForm
                 attachments={attachments}
                 setEmailData={setEmailData}
+                onAttachmentUpload={onAttachmentUpload}
+                onRemoveAttachment={onRemoveAttachment}
             />
         </Box>
     );

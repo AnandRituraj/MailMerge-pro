@@ -236,3 +236,62 @@ For the deployed version:
 - **File Upload Issues**: Make sure CSV files are properly formatted with "name,email" on each line
 - **Browser Compatibility**: The application works best on modern browsers (Chrome, Firefox, Safari, Edge)
 - **Mobile Display Issues**: If text appears too small on mobile, try using landscape orientation for better readability
+
+## AI Job Application Mode
+
+The application now includes an AI-powered mode specifically designed for job applications. This mode allows you to:
+
+1. Upload potential employer information (name, email, job description, company profile)
+2. Generate personalized cold emails using OpenAI's language models
+3. Send tailored emails to recruiters that highlight your relevant skills
+
+### AI Mode Authentication
+
+The AI mode is password-protected to control access to this feature:
+
+1. When switching to AI mode, users will be prompted to enter a password
+2. For security, the password must be set in your server's environment variables:
+   ```
+   AI_MODE_PASSWORD=your_secure_password_here
+   ```
+3. The password is validated server-side for enhanced security
+4. If no password is set in the environment variables, AI mode will be unavailable
+
+### Setting Up OpenAI Integration
+
+To use the AI features, you'll need an OpenAI API key:
+
+1. Sign up or log in at [OpenAI Platform](https://platform.openai.com/)
+2. Navigate to API Keys and create a new secret key
+3. Create a `.env` file in the `server` directory with the following content:
+   ```
+   PORT=5001
+   OPENAI_API_KEY=your_openai_api_key_here
+   ```
+4. Replace `your_openai_api_key_here` with your actual API key
+
+### PDF Resume Support
+
+The application now supports uploading PDF resumes:
+
+1. Toggle the "Upload resume as PDF" switch in the AI Email Generator
+2. Select your resume file (PDF format only, max 5MB)
+3. The system will automatically extract text from your resume
+4. This extracted text will be used to generate a personalized email
+
+The PDF processing happens server-side for enhanced security. Your uploaded resume will be:
+
+- Processed to extract the text content
+- Used to generate the email
+- Automatically deleted after processing
+
+### Using AI Job Application Mode
+
+1. **Upload Targets**: Either manually enter job information or upload a CSV/JSON file with columns for name, email, jobDescription, and companyProfile
+2. **Generate AI Email**:
+   - Enter the recipient's information and job details
+   - Paste your resume text OR upload a PDF resume file
+   - Generate a personalized email
+3. **Review and Send**: Review the AI-generated emails before sending them
+
+The AI will analyze your resume and the job details to create personalized, relevant emails that highlight your matching skills and experience.
