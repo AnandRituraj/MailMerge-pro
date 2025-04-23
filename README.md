@@ -293,6 +293,12 @@ The PDF processing happens server-side for enhanced security. Your uploaded resu
 - **Authentication Failed**: Double-check your email and password
 - **Less Secure Apps**: For some email providers, you may need to enable "Less Secure Apps" access
 - **Connection Timeout**: The email server might be temporarily unavailable, try again later
+- **Outlook SMTP Issues**: Microsoft Outlook users may experience "Invalid login" errors. This is often due to Microsoft's security policies. Try the following:
+  - Use an App Password instead of your regular password
+  - Ensure your account has 2FA enabled, then generate an app password
+  - Go to https://account.live.com/proofs/Manage and enable "App passwords"
+  - If still having issues, try enabling "Less secure app access" temporarily
+  - As a last resort, try using a different email provider for sending
 
 ### Application Issues
 
