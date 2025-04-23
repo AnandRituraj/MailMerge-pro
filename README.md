@@ -1,15 +1,17 @@
 # MailMerge Pro
 
-A professional web application for sending personalized emails to multiple recipients. The app allows you to create email templates with dynamic placeholders and automatically sends customized emails to each recipient
+A professional web application for sending personalized emails to multiple recipients, with an AI-powered mode specifically designed for job applications. The app allows you to create email templates with dynamic placeholders and automatically sends customized emails to each recipient.
 
 ## Live Demo
 
 The application is now deployed and available online:
 
 - **Frontend**: https://mailmerge-pro.vercel.app/
-- **Backend**: Hosted on Render
+- **Backend**: https://mailmerge-pro.onrender.com (hosted on Render)
 
 ## Features
+
+### Standard Email Mode
 
 - Add recipients individually or upload CSV/JSON file with recipient information
 - Create email templates with dynamic placeholders (`{name}`)
@@ -20,6 +22,17 @@ The application is now deployed and available online:
 - Preview emails before sending
 - Send personalized emails to multiple recipients
 - View sending results and delivery status
+
+### AI Job Application Mode
+
+- Upload potential employer information (name, email, job description, company profile)
+- Generate personalized cold emails using OpenAI's language models
+- Upload and process PDF resumes to extract text for personalization
+- Send tailored emails to recruiters that highlight your relevant skills
+- Password protection to control access to AI features
+
+### General Features
+
 - Fully responsive design that works on mobile, tablet, and desktop
 - Modern, accessible UI with improved keyboard navigation
 - Secure: email credentials are never stored on the server
@@ -35,6 +48,8 @@ The application is now deployed and available online:
   - Node.js
   - Express
   - Nodemailer for email sending
+  - OpenAI API for AI email generation
+  - PDF parsing for resume extraction
   - CORS for cross-origin support
 
 ## Project Structure
@@ -51,8 +66,12 @@ mailmerge-pro/
 │
 ├── server/               # Backend Node.js application
 │   ├── src/              # Source files
+│   │   ├── utils/        # Utility functions
+│   │   │   ├── emailUtils.js     # Email functionality
+│   │   │   ├── openaiService.js  # AI email generation
+│   │   │   └── fileUtils.js      # File handling utilities
 │   │   └── index.js      # Express server and API endpoints
-│   ├── .env              # Environment variables for port config (not in repo)
+│   ├── uploads/          # Temporary storage for uploaded files
 │   └── package.json      # Backend dependencies
 │
 └── .gitignore            # Git ignore file
@@ -66,6 +85,7 @@ If you want to run the application locally instead of using the deployed version
 
 - Node.js (v14+) and npm installed
 - Email account (Gmail or Outlook) for sending emails
+- OpenAI API key (for AI mode)
 
 ### Setup Instructions
 
@@ -82,16 +102,15 @@ cd ../client
 npm install
 ```
 
-3. Configure server port (optional):
+3. Configure environment variables:
 
-   - By default, the server runs on port 5000
-   - To change the port, create a `server/.env` file with:
+   - Create a `server/.env` file with the following:
 
    ```
    PORT=5001
+   OPENAI_API_KEY=your_openai_api_key_here
+   AI_MODE_PASSWORD=your_secure_password_here
    ```
-
-   - Make sure the "proxy" field in `client/package.json` matches this port
 
 4. Start the development servers:
 
@@ -108,6 +127,8 @@ npm start
 5. Open your browser and navigate to `http://localhost:3000`
 
 ## Usage Guide
+
+### Standard Mode
 
 1. **Configure Email Account**:
 
@@ -142,6 +163,35 @@ npm start
    - See which emails were sent successfully
    - Option to start over and send more emails
 
+### AI Job Application Mode
+
+1. **Configure Email Account**:
+
+   - Same as standard mode
+
+2. **Upload Targets**:
+
+   - Enter job information manually (name, email, job description, company profile)
+   - Or upload a CSV/JSON file with columns for name, email, jobDescription, and companyProfile
+   - Enter your resume text or upload a PDF resume (max 5MB)
+
+3. **Generate AI Email**:
+
+   - Select a recipient from the list
+   - Click "Generate Email" to create a personalized job application email
+   - Verify and edit the generated email and subject if needed
+   - Add attachments (your resume, cover letter, etc.)
+
+4. **Review and Send**:
+
+   - Check your AI-generated emails
+   - Review attachments
+   - Click "Send Emails" to send your job applications
+
+5. **View Results**:
+   - See which emails were sent successfully
+   - Option to start over and send more applications
+
 ## Multiple Email Addresses and BCC Recipients
 
 MailMerge Pro supports sending to multiple email addresses per recipient:
@@ -153,18 +203,10 @@ MailMerge Pro supports sending to multiple email addresses per recipient:
 
 ## Email Signatures
 
-You can now add signatures to your emails in two formats:
+You can add signatures to your emails in two formats:
 
 - **Plain Text**: Enter plain text that will maintain your formatting, with automatic link detection
 - **HTML**: Paste HTML code for more complex signatures with images and formatting
-
-## Device Compatibility
-
-The application is fully responsive and works on:
-
-- **Desktop computers**: Optimized layout with side-by-side form elements
-- **Tablets**: Adaptive layout that adjusts to screen width
-- **Mobile phones**: Stacked layout for easy reading and interaction on small screens
 
 ## Gmail Setup for Sending Emails
 
@@ -188,8 +230,11 @@ The application is deployed using:
 ### Deployment Configuration
 
 - The frontend and backend are deployed separately
-- CORS is configured to allow communication between the two services
-- The frontend is configured to connect to the backend using environment variables
+- CORS is configured to allow communication between the frontend (Vercel) and backend (Render)
+- Required environment variables for Render:
+  - `PORT` - Port for the server to run on (default: 5000)
+  - `OPENAI_API_KEY` - Your OpenAI API key for AI mode
+  - `AI_MODE_PASSWORD` - Password to access AI mode
 
 ## Security
 
@@ -199,27 +244,46 @@ This application prioritizes security by:
 - Using email credentials only for the current session
 - Passing credentials securely via HTTPS
 - Not saving sent emails or their content
+- Temporarily processing and immediately deleting uploaded PDF resumes
+- Password-protecting access to the AI features
 
-## Development
+## AI Mode Authentication
 
-### Frontend
+The AI mode is password-protected to control access to this feature:
 
-The client is built with React and uses Material UI for the user interface. The proxy is configured to forward API requests to the backend server running on port 5001.
+1. When switching to AI mode, users will be prompted to enter a password
+2. For security, the password must be set in your server's environment variables:
+   ```
+   AI_MODE_PASSWORD=your_secure_password_here
+   ```
+3. The password is validated server-side for enhanced security
+4. If no password is set in the environment variables, AI mode will be unavailable
 
-### Backend
+## Setting Up OpenAI Integration
 
-The server is built with Express and uses Nodemailer to send emails. It exposes API endpoints for sending emails and parsing recipient data.
+To use the AI features, you'll need an OpenAI API key:
 
-### Environment Variables
+1. Sign up or log in at [OpenAI Platform](https://platform.openai.com/)
+2. Navigate to API Keys and create a new secret key
+3. Add the key to your environment variables:
+   ```
+   OPENAI_API_KEY=your_openai_api_key_here
+   ```
 
-For local development, the server uses only one environment variable:
+## PDF Resume Support
 
-- `PORT`: The port on which the server runs (default: 5000)
+The application supports uploading PDF resumes:
 
-For the deployed version:
+1. Toggle the "Upload resume as PDF" switch in the AI Email Generator
+2. Select your resume file (PDF format only, max 5MB)
+3. The system will automatically extract text from your resume
+4. This extracted text will be used to generate a personalized email
 
-- The backend service on Render is configured with the appropriate environment variables
-- The frontend on Vercel uses build-time configuration to connect to the backend
+The PDF processing happens server-side for enhanced security. Your uploaded resume will be:
+
+- Processed to extract the text content
+- Used to generate the email
+- Automatically deleted after processing
 
 ## Troubleshooting
 
@@ -233,65 +297,7 @@ For the deployed version:
 ### Application Issues
 
 - **Backend Connection Failed**: The backend server might be in sleep mode (free tier on Render). The first request may take a few seconds to wake it up.
-- **File Upload Issues**: Make sure CSV files are properly formatted with "name,email" on each line
-- **Browser Compatibility**: The application works best on modern browsers (Chrome, Firefox, Safari, Edge)
-- **Mobile Display Issues**: If text appears too small on mobile, try using landscape orientation for better readability
-
-## AI Job Application Mode
-
-The application now includes an AI-powered mode specifically designed for job applications. This mode allows you to:
-
-1. Upload potential employer information (name, email, job description, company profile)
-2. Generate personalized cold emails using OpenAI's language models
-3. Send tailored emails to recruiters that highlight your relevant skills
-
-### AI Mode Authentication
-
-The AI mode is password-protected to control access to this feature:
-
-1. When switching to AI mode, users will be prompted to enter a password
-2. For security, the password must be set in your server's environment variables:
-   ```
-   AI_MODE_PASSWORD=your_secure_password_here
-   ```
-3. The password is validated server-side for enhanced security
-4. If no password is set in the environment variables, AI mode will be unavailable
-
-### Setting Up OpenAI Integration
-
-To use the AI features, you'll need an OpenAI API key:
-
-1. Sign up or log in at [OpenAI Platform](https://platform.openai.com/)
-2. Navigate to API Keys and create a new secret key
-3. Create a `.env` file in the `server` directory with the following content:
-   ```
-   PORT=5001
-   OPENAI_API_KEY=your_openai_api_key_here
-   ```
-4. Replace `your_openai_api_key_here` with your actual API key
-
-### PDF Resume Support
-
-The application now supports uploading PDF resumes:
-
-1. Toggle the "Upload resume as PDF" switch in the AI Email Generator
-2. Select your resume file (PDF format only, max 5MB)
-3. The system will automatically extract text from your resume
-4. This extracted text will be used to generate a personalized email
-
-The PDF processing happens server-side for enhanced security. Your uploaded resume will be:
-
-- Processed to extract the text content
-- Used to generate the email
-- Automatically deleted after processing
-
-### Using AI Job Application Mode
-
-1. **Upload Targets**: Either manually enter job information or upload a CSV/JSON file with columns for name, email, jobDescription, and companyProfile
-2. **Generate AI Email**:
-   - Enter the recipient's information and job details
-   - Paste your resume text OR upload a PDF resume file
-   - Generate a personalized email
-3. **Review and Send**: Review the AI-generated emails before sending them
-
-The AI will analyze your resume and the job details to create personalized, relevant emails that highlight your matching skills and experience.
+- **File Upload Issues**: Make sure CSV files are properly formatted with the required columns
+- **PDF Processing Errors**: Ensure your PDF is not password-protected and contains selectable text
+- **AI Mode Access**: If you cannot access AI mode, ensure the password is correctly set in environment variables
+- **OpenAI Errors**: Check that your API key is valid and has sufficient credits
