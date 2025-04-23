@@ -1,6 +1,6 @@
 # MailMerge Pro
 
-A professional web application for sending personalized emails to multiple recipients. The app allows you to create email templates with dynamic placeholders and automatically sends customized emails to each recipient.
+A professional web application for sending personalized emails to multiple recipients. The app allows you to create email templates with dynamic placeholders and automatically sends customized emails to each recipient
 
 ## Live Demo
 
