@@ -37,7 +37,12 @@ function App() {
 		emailTemplate: '',
 		subject: '',
 		signature: '',
-		emailConfig: null,
+		emailConfig: {
+			email: '',
+			password: '',
+			service: 'gmail',
+			credentialsSaved: false
+		},
 		attachments: [],
 		resume: '', // Added for AI mode
 		resumeContent: '', // For text-based resume
@@ -102,7 +107,12 @@ function App() {
 			emailTemplate: '',
 			subject: '',
 			signature: '',
-			emailConfig: null,
+			emailConfig: {
+				email: '',
+				password: '',
+				service: 'gmail',
+				credentialsSaved: false
+			},
 			attachments: [],
 			resume: '',
 			resumeContent: '',
@@ -288,7 +298,8 @@ function App() {
 			0: emailData.emailConfig && // Email Account
 				emailData.emailConfig.email &&
 				emailData.emailConfig.password &&
-				emailData.emailConfig.service,
+				emailData.emailConfig.service &&
+				emailData.emailConfig.credentialsSaved,
 		};
 
 		if (mode === 'standard') {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
 	Box,
 	Typography,
@@ -21,6 +21,34 @@ const EmailCredentialsForm = ({ emailConfig, setEmailData }) => {
 	const [service, setService] = useState(emailConfig?.service || 'gmail');
 	const [errors, setErrors] = useState({});
 	const [testStatus, setTestStatus] = useState(null);
+	const [credentialsSaved, setCredentialsSaved] = useState(emailConfig?.credentialsSaved === true);
+
+	useEffect(() => {
+		console.log('EmailCredentialsForm initialized with:', {
+			emailConfig,
+			credentialsSaved: emailConfig?.credentialsSaved,
+			stateCredentialsSaved: credentialsSaved
+		});
+	}, [emailConfig, credentialsSaved]);
+
+	useEffect(() => {
+		// Reset saved state when credentials change
+		if (emailConfig?.email !== email ||
+			emailConfig?.password !== password ||
+			emailConfig?.service !== service) {
+			setCredentialsSaved(false);
+			// Also update the parent component's state to reflect this change
+			if (emailConfig) {
+				setEmailData((prev) => ({
+					...prev,
+					emailConfig: {
+						...prev.emailConfig,
+						credentialsSaved: false
+					},
+				}));
+			}
+		}
+	}, [email, password, service, emailConfig, setEmailData]);
 
 	const validateForm = () => {
 		const newErrors = {};
@@ -40,8 +68,10 @@ const EmailCredentialsForm = ({ emailConfig, setEmailData }) => {
 		if (validateForm()) {
 			setEmailData((prev) => ({
 				...prev,
-				emailConfig: { email, password, service },
+				emailConfig: { email, password, service, credentialsSaved: true },
 			}));
+			setCredentialsSaved(true);
+			console.log('Credentials saved, state updated:', { email, service, credentialsSaved: true });
 		}
 	};
 
@@ -184,6 +214,12 @@ const EmailCredentialsForm = ({ emailConfig, setEmailData }) => {
 					sx={{ mt: 2 }}
 				>
 					{testStatus.message}
+				</Alert>
+			)}
+
+			{!credentialsSaved && (
+				<Alert severity="info" sx={{ mt: 2 }}>
+					You must save your credentials before proceeding to the next step.
 				</Alert>
 			)}
 		</Box>
