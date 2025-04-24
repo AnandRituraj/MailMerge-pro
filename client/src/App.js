@@ -11,7 +11,6 @@ import {
 	ToggleButtonGroup,
 	ToggleButton,
 	Grid,
-	useMediaQuery,
 	ThemeProvider,
 	CssBaseline
 } from '@mui/material';
@@ -326,9 +325,6 @@ function App() {
 			}[step] ?? true;
 		}
 	};
-
-	// Check if device is mobile
-	const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
 	return (
 		<ThemeProvider theme={theme}>
