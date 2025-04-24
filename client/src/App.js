@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
 	Container,
 	Typography,
@@ -10,7 +10,10 @@ import {
 	Button,
 	ToggleButtonGroup,
 	ToggleButton,
-	Grid
+	Grid,
+	useMediaQuery,
+	ThemeProvider,
+	CssBaseline
 } from '@mui/material';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import EditIcon from '@mui/icons-material/Edit';
@@ -23,15 +26,17 @@ import EmailCredentialsForm from './components/EmailCredentialsForm';
 import AIEmailForm from './components/AIEmailForm';
 import AIRecipientsUploader from './components/AIRecipientsUploader';
 import AIAuthDialog from './components/AIAuthDialog';
+import AppHeader from './components/AppHeader';
+import { createAppTheme } from './theme';
 import config from './config';
 
 const standardSteps = ['Email Account', 'Recipients', 'Email Template', 'Review & Send'];
 const aiModeSteps = ['Email Account', 'Upload Targets', 'AI Email Generator', 'Review & Send'];
 
 function App() {
+	const [mode, setMode] = useState('standard'); // 'standard' or 'ai'
 	const [activeStep, setActiveStep] = useState(0);
 	const [loading, setLoading] = useState(false);
-	const [mode, setMode] = useState('standard'); // 'standard' or 'ai'
 	const [emailData, setEmailData] = useState({
 		recipients: [],
 		emailTemplate: '',
@@ -57,6 +62,9 @@ function App() {
 	// Add shared state for resume file
 	const [resumeFile, setResumeFile] = useState(null);
 	const [resumeUploadStatus, setResumeUploadStatus] = useState('');
+
+	// Create the theme - always use dark mode
+	const theme = useMemo(() => createAppTheme(), []);
 
 	// Determine which steps to show based on mode
 	const steps = mode === 'standard' ? standardSteps : aiModeSteps;
@@ -319,108 +327,183 @@ function App() {
 		}
 	};
 
+	// Check if device is mobile
+	const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
 	return (
-		<Container maxWidth="md" sx={{ px: { xs: 2, sm: 3 } }}>
-			<Box sx={{ my: { xs: 2, sm: 4 } }}>
-				<Typography variant="h4" component="h1" align="center" gutterBottom sx={{
-					fontSize: { xs: '1.75rem', sm: '2.125rem' }
-				}}>
-					MailMerge Pro
-				</Typography>
+		<ThemeProvider theme={theme}>
+			<CssBaseline />
+			<Box sx={{
+				minHeight: '100vh',
+				backgroundColor: theme.palette.background.default,
+				display: 'flex',
+				flexDirection: 'column',
+				background: 'linear-gradient(160deg, #0a0a14 0%, #151530 100%)',
+			}}>
+				<AppHeader />
 
-				{activeStep === 0 && (
-					<Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
-						<ToggleButtonGroup
-							value={mode}
-							exclusive
-							onChange={handleModeChange}
-							aria-label="app mode"
-							size="small"
-						>
-							<ToggleButton value="standard" aria-label="standard mode">
-								<EditIcon sx={{ mr: 1 }} />
-								Standard Mode
-							</ToggleButton>
-							<ToggleButton value="ai" aria-label="ai mode">
-								{!isAIAuthenticated && <LockIcon sx={{ mr: 0.5 }} fontSize="small" />}
-								<AutoAwesomeIcon sx={{ mr: 1 }} />
-								AI Job Application Mode
-							</ToggleButton>
-						</ToggleButtonGroup>
-					</Box>
-				)}
-
-				<Paper sx={{ p: { xs: 2, sm: 3 }, mb: 3 }}>
-					{activeStep < 4 ? (
-						<>
-							<Stepper
-								activeStep={activeStep}
+				<Container maxWidth="md" sx={{ px: { xs: 1, sm: 2 }, flexGrow: 1, py: 1 }}>
+					{activeStep === 0 && (
+						<Box sx={{ display: 'flex', justifyContent: 'center', mb: 1.5 }}>
+							<ToggleButtonGroup
+								value={mode}
+								exclusive
+								onChange={handleModeChange}
+								aria-label="app mode"
+								size="small"
 								sx={{
-									mb: 3,
-									display: { xs: 'none', sm: 'flex' }
+									backgroundColor: 'rgba(30, 30, 50, 0.5)',
+									borderRadius: 2,
+									p: 0.5,
+									boxShadow: '0 8px 24px rgba(0,0,0,0.5)',
+									border: '1px solid rgba(255, 255, 255, 0.08)'
 								}}
 							>
-								{steps.map((label) => (
-									<Step key={label}>
-										<StepLabel>{label}</StepLabel>
-									</Step>
-								))}
-							</Stepper>
+								<ToggleButton value="standard" aria-label="standard mode">
+									<EditIcon sx={{ mr: 1 }} />
+									Standard Mode
+								</ToggleButton>
+								<ToggleButton value="ai" aria-label="ai mode">
+									{!isAIAuthenticated && <LockIcon sx={{ mr: 0.5 }} fontSize="small" />}
+									<AutoAwesomeIcon sx={{ mr: 1 }} />
+									AI Job Application Mode
+								</ToggleButton>
+							</ToggleButtonGroup>
+						</Box>
+					)}
 
-							{/* Mobile stepper - just show current step */}
-							<Box sx={{
-								display: { xs: 'flex', sm: 'none' },
-								justifyContent: 'center',
-								mb: 3
-							}}>
-								<Typography variant="h6" color="primary">
-									Step {activeStep + 1}: {steps[activeStep]}
-								</Typography>
-							</Box>
+					<Paper
+						elevation={0}
+						sx={{
+							p: { xs: 1.5, sm: 2 },
+							mb: 1.5,
+							borderRadius: 3,
+							border: '1px solid rgba(255, 255, 255, 0.1)',
+							position: 'relative',
+							overflow: 'hidden',
+							backdropFilter: 'blur(12px)',
+							backgroundColor: 'rgba(25, 25, 40, 0.7)',
+							boxShadow: '0 10px 40px rgba(0, 0, 0, 0.4)',
+							'&::after': activeStep < 4 && mode === 'ai' ? {
+								content: '""',
+								position: 'absolute',
+								top: 0,
+								right: 0,
+								width: '150px',
+								height: '150px',
+								background: `radial-gradient(circle at top right, ${theme.palette.secondary.main}30, transparent 70%)`,
+								zIndex: 0,
+								className: 'mui-fixed',
+							} : {},
+							'&::before': {
+								content: '""',
+								position: 'absolute',
+								top: 0,
+								left: 0,
+								right: 0,
+								height: '2px',
+								background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent)',
+								zIndex: 0,
+								className: 'mui-fixed',
+							}
+						}}
+					>
+						{activeStep < 4 ? (
+							<>
+								<Stepper
+									activeStep={activeStep}
+									sx={{
+										mb: 2,
+										display: { xs: 'none', sm: 'flex' }
+									}}
+									alternativeLabel
+								>
+									{steps.map((label) => (
+										<Step key={label}>
+											<StepLabel>{label}</StepLabel>
+										</Step>
+									))}
+								</Stepper>
 
-							<Box>
-								{getStepContent(activeStep)}
+								{/* Mobile stepper - just show current step */}
 								<Box sx={{
-									display: 'flex',
-									flexDirection: { xs: 'column', sm: 'row' },
-									justifyContent: { xs: 'center', sm: 'space-between' },
-									alignItems: 'center',
-									gap: 2,
-									mt: 3
+									display: { xs: 'flex', sm: 'none' },
+									justifyContent: 'center',
+									mb: 3
 								}}>
-									<Button
-										disabled={activeStep === 0}
-										onClick={handleBack}
-										sx={{
-											order: { xs: 2, sm: 1 },
-											width: { xs: '100%', sm: 'auto' }
-										}}
-									>
-										Back
-									</Button>
-									{activeStep === steps.length - 1 ? (
-										<Box />
-									) : (
+									<Typography variant="h6" color="primary" fontWeight="500">
+										Step {activeStep + 1}: {steps[activeStep]}
+									</Typography>
+								</Box>
+
+								<Box sx={{ position: 'relative', zIndex: 1 }}>
+									{getStepContent(activeStep)}
+									<Box sx={{
+										display: 'flex',
+										flexDirection: { xs: 'column', sm: 'row' },
+										justifyContent: { xs: 'center', sm: 'space-between' },
+										alignItems: 'center',
+										gap: 2,
+										mt: 4
+									}}>
 										<Button
-											variant="contained"
-											color="primary"
-											onClick={handleNext}
-											disabled={!isStepComplete(activeStep)}
+											disabled={activeStep === 0}
+											onClick={handleBack}
 											sx={{
-												order: { xs: 1, sm: 2 },
+												order: { xs: 2, sm: 1 },
 												width: { xs: '100%', sm: 'auto' }
 											}}
+											variant="outlined"
 										>
-											Next
+											Back
 										</Button>
-									)}
+										{activeStep === steps.length - 1 ? (
+											<Box />
+										) : (
+											<Button
+												variant="contained"
+												color="primary"
+												onClick={handleNext}
+												disabled={!isStepComplete(activeStep)}
+												sx={{
+													order: { xs: 1, sm: 2 },
+													width: { xs: '100%', sm: 'auto' },
+													px: 4,
+													background: 'linear-gradient(45deg, #3967d4 10%, #5e90ff 90%)',
+													boxShadow: '0 4px 15px rgba(61, 106, 212, 0.3)',
+													'&:hover': {
+														background: 'linear-gradient(45deg, #3463c9 10%, #4e83f5 90%)',
+														boxShadow: '0 6px 20px rgba(61, 106, 212, 0.4)',
+													}
+												}}
+											>
+												Next
+											</Button>
+										)}
+									</Box>
 								</Box>
-							</Box>
-						</>
-					) : (
-						getStepContent(activeStep)
-					)}
-				</Paper>
+							</>
+						) : (
+							getStepContent(activeStep)
+						)}
+					</Paper>
+				</Container>
+
+				<Box
+					component="footer"
+					sx={{
+						textAlign: 'center',
+						py: 2.5,
+						mt: 'auto',
+						borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+						background: 'rgba(10, 10, 20, 0.8)',
+						backdropFilter: 'blur(10px)'
+					}}
+				>
+					<Typography variant="body2" color="text.secondary">
+						© {new Date().getFullYear()} MailMerge Pro. All rights reserved.
+					</Typography>
+				</Box>
 			</Box>
 
 			{/* Authentication Dialog */}
@@ -429,7 +512,7 @@ function App() {
 				onClose={() => setShowAuthDialog(false)}
 				onAuthenticate={handleAuthentication}
 			/>
-		</Container>
+		</ThemeProvider>
 	);
 }
 

@@ -1,29 +1,16 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
 
-const theme = createTheme({
-    palette: {
-        primary: {
-            main: '#1976d2',
-        },
-        secondary: {
-            main: '#dc004e',
-        },
-        background: {
-            default: '#f5f5f5',
-        },
-    },
-});
+// Add Inter font
+const interFontLink = document.createElement('link');
+interFontLink.rel = 'stylesheet';
+interFontLink.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap';
+document.head.appendChild(interFontLink);
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
     <React.StrictMode>
-        <ThemeProvider theme={theme}>
-            <CssBaseline />
-            <App />
-        </ThemeProvider>
+        <App />
     </React.StrictMode>
 ); 

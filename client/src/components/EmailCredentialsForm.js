@@ -3,7 +3,6 @@ import {
 	Box,
 	Typography,
 	TextField,
-	Paper,
 	FormControl,
 	InputLabel,
 	Select,
@@ -11,11 +10,18 @@ import {
 	Button,
 	FormHelperText,
 	Alert,
+	useTheme,
+	Card,
+	CardContent,
+	Divider,
+	alpha
 } from '@mui/material';
 import LockIcon from '@mui/icons-material/Lock';
+import EmailIcon from '@mui/icons-material/Email';
 import config from '../config';
 
 const EmailCredentialsForm = ({ emailConfig, setEmailData }) => {
+	const theme = useTheme();
 	const [email, setEmail] = useState(emailConfig?.email || '');
 	const [password, setPassword] = useState(emailConfig?.password || '');
 	const [service, setService] = useState(emailConfig?.service || 'gmail');
@@ -107,19 +113,55 @@ const EmailCredentialsForm = ({ emailConfig, setEmailData }) => {
 
 	return (
 		<Box>
-			<Typography variant="h6" gutterBottom>
-				Email Account
-			</Typography>
-
-			<Paper elevation={0} sx={{ p: 2, mb: 3, bgcolor: '#f8f8f8' }}>
-				<Typography variant="body2">
-					Enter your email credentials to send emails from your account.
-					These credentials are only used to send emails and are not stored on our servers.
+			<Box sx={{
+				display: 'flex',
+				alignItems: 'center',
+				mb: 3,
+				gap: 1
+			}}>
+				<EmailIcon color="primary" />
+				<Typography variant="h5" component="h2" fontWeight="600">
+					Email Account Setup
 				</Typography>
-			</Paper>
+			</Box>
+
+			<Card
+				variant="outlined"
+				sx={{
+					mb: 4,
+					borderRadius: 2,
+					background: theme.palette.mode === 'dark'
+						? alpha(theme.palette.primary.main, 0.08)
+						: alpha(theme.palette.primary.light, 0.07),
+					border: `1px solid ${theme.palette.mode === 'dark'
+						? alpha(theme.palette.primary.main, 0.2)
+						: alpha(theme.palette.primary.main, 0.1)}`
+				}}
+			>
+				<CardContent sx={{ p: { xs: 2, sm: 3 } }}>
+					<Typography variant="body1" sx={{ mb: 1, fontWeight: 500 }}>
+						Connect Your Email Account
+					</Typography>
+					<Typography variant="body2" color="text.secondary">
+						Enter your email credentials to send emails from your account.
+						These credentials are only used to send emails and are not stored on our servers.
+					</Typography>
+				</CardContent>
+			</Card>
 
 			<form onSubmit={handleSave} noValidate>
-				<FormControl fullWidth margin="normal" error={!!errors.service}>
+				<FormControl
+					fullWidth
+					margin="normal"
+					error={!!errors.service}
+					sx={{
+						'& .MuiOutlinedInput-root': {
+							bgcolor: theme.palette.mode === 'dark'
+								? alpha(theme.palette.common.white, 0.05)
+								: alpha(theme.palette.common.black, 0.02)
+						}
+					}}
+				>
 					<InputLabel id="email-service-label">Email Service</InputLabel>
 					<Select
 						labelId="email-service-label"
@@ -148,6 +190,13 @@ const EmailCredentialsForm = ({ emailConfig, setEmailData }) => {
 					required
 					autoComplete="username email"
 					inputProps={{ 'aria-label': 'Email address' }}
+					InputProps={{
+						sx: {
+							bgcolor: theme.palette.mode === 'dark'
+								? alpha(theme.palette.common.white, 0.05)
+								: alpha(theme.palette.common.black, 0.02)
+						}
+					}}
 				/>
 
 				<TextField
@@ -163,27 +212,52 @@ const EmailCredentialsForm = ({ emailConfig, setEmailData }) => {
 					required
 					autoComplete="current-password"
 					inputProps={{ 'aria-label': 'Password' }}
+					InputProps={{
+						sx: {
+							bgcolor: theme.palette.mode === 'dark'
+								? alpha(theme.palette.common.white, 0.05)
+								: alpha(theme.palette.common.black, 0.02)
+						}
+					}}
 				/>
 
 				{service === 'gmail' && (
-					<Paper elevation={0} sx={{ p: 2, my: 2, bgcolor: '#e8f4fd' }}>
-						<Typography variant="body2" component="div">
-							<strong>Gmail users:</strong> You need to use an App Password instead of your regular password.
-							<ol style={{ marginTop: '8px', paddingLeft: '20px' }}>
-								<li>Enable 2-Step Verification in your Google Account</li>
-								<li>Go to your Google Account → Security → App passwords</li>
-								<li>Create a new app password for "Mail"</li>
-								<li>Use that password here</li>
-							</ol>
-						</Typography>
-					</Paper>
+					<Card
+						variant="outlined"
+						sx={{
+							my: 3,
+							borderRadius: 2,
+							background: theme.palette.mode === 'dark'
+								? alpha(theme.palette.info.main, 0.08)
+								: alpha(theme.palette.info.light, 0.15),
+							border: `1px solid ${theme.palette.mode === 'dark'
+								? alpha(theme.palette.info.main, 0.2)
+								: alpha(theme.palette.info.main, 0.2)}`
+						}}
+					>
+						<CardContent sx={{ p: { xs: 2, sm: 2.5 } }}>
+							<Typography variant="subtitle2" component="div" fontWeight="600" sx={{ mb: 1.5 }}>
+								Gmail users: App Password Required
+							</Typography>
+							<Divider sx={{ mb: 2, opacity: 0.6 }} />
+							<Typography variant="body2" component="div" sx={{ pl: 1 }}>
+								You need to use an App Password instead of your regular password:
+								<ol style={{ marginTop: '8px', paddingLeft: '20px' }}>
+									<li>Enable 2-Step Verification in your Google Account</li>
+									<li>Go to your Google Account → Security → App passwords</li>
+									<li>Create a new app password for "Mail"</li>
+									<li>Use that password here</li>
+								</ol>
+							</Typography>
+						</CardContent>
+					</Card>
 				)}
 
 				<Box sx={{
 					display: 'flex',
 					flexDirection: { xs: 'column', sm: 'row' },
 					gap: 2,
-					mt: 3
+					mt: 4
 				}}>
 					<Button
 						variant="contained"
@@ -191,15 +265,21 @@ const EmailCredentialsForm = ({ emailConfig, setEmailData }) => {
 						type="submit"
 						startIcon={<LockIcon />}
 						fullWidth={true}
-						sx={{ width: { xs: '100%', sm: 'auto' } }}
+						size="large"
+						sx={{
+							width: { xs: '100%', sm: 'auto' },
+							py: 1.3,
+							fontWeight: 600
+						}}
 					>
 						Save Credentials
 					</Button>
 
 					<Button
-						variant="outlined"
+						variant={theme.palette.mode === 'dark' ? 'outlined' : 'contained'}
+						color={theme.palette.mode === 'dark' ? 'primary' : 'secondary'}
 						onClick={handleTestConnection}
-						type="button"
+						disabled={!email || !password}
 						fullWidth={true}
 						sx={{ width: { xs: '100%', sm: 'auto' } }}
 					>
@@ -210,16 +290,19 @@ const EmailCredentialsForm = ({ emailConfig, setEmailData }) => {
 
 			{testStatus && (
 				<Alert
-					severity={testStatus.status === 'testing' ? 'info' : testStatus.status}
-					sx={{ mt: 2 }}
+					severity={testStatus.status === 'success' ? 'success' : testStatus.status === 'testing' ? 'info' : 'error'}
+					sx={{ mt: 3, borderRadius: 2 }}
 				>
 					{testStatus.message}
 				</Alert>
 			)}
 
-			{!credentialsSaved && (
-				<Alert severity="info" sx={{ mt: 2 }}>
-					You must save your credentials before proceeding to the next step.
+			{credentialsSaved && (
+				<Alert
+					severity="success"
+					sx={{ mt: 3, borderRadius: 2 }}
+				>
+					Email credentials saved successfully!
 				</Alert>
 			)}
 		</Box>

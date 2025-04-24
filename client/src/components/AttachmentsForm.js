@@ -9,10 +9,12 @@ import {
     ListItemSecondaryAction,
     IconButton,
     Paper,
-    Chip
+    Chip,
+    Alert
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
+import InsertDriveFileOutlinedIcon from '@mui/icons-material/InsertDriveFileOutlined';
 
 const AttachmentsForm = ({
     attachments = [],
@@ -96,30 +98,27 @@ const AttachmentsForm = ({
     };
 
     return (
-        <Box sx={{ mt: 3 }}>
-            <Typography variant="h6" gutterBottom>
-                Attachments
-            </Typography>
-
-            <Paper elevation={0} sx={{ p: 2, mb: 3, bgcolor: '#f8f8f8' }}>
-                <Typography variant="body2">
-                    Attach files to your email. Maximum file size is 10MB per file.
-                    Common file types like PDF, Word, Excel, images, etc. are supported.
+        <Box>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                <Typography variant="subtitle2" fontWeight="500">
+                    Attachments
                 </Typography>
-            </Paper>
 
-            <Box sx={{
-                display: 'flex',
-                flexDirection: { xs: 'column', sm: 'row' },
-                alignItems: { xs: 'flex-start', sm: 'center' },
-                gap: 2,
-                mb: 2
-            }}>
                 <Button
                     variant="contained"
                     component="label"
                     startIcon={<AttachFileIcon />}
-                    sx={{ width: { xs: '100%', sm: 'auto' } }}
+                    size="small"
+                    sx={{
+                        borderRadius: 2,
+                        background: 'linear-gradient(45deg, #3967d4 10%, #5e90ff 90%)',
+                        boxShadow: '0 2px 10px rgba(61, 106, 212, 0.3)',
+                        '&:hover': {
+                            background: 'linear-gradient(45deg, #3463c9 10%, #4e83f5 90%)',
+                            boxShadow: '0 4px 15px rgba(61, 106, 212, 0.4)',
+                            transform: 'translateY(-1px)'
+                        }
+                    }}
                 >
                     Add Attachments
                     <input
@@ -129,61 +128,78 @@ const AttachmentsForm = ({
                         onChange={handleFileChange}
                     />
                 </Button>
-                {fileError && (
-                    <Chip
-                        label={fileError}
-                        color="error"
-                        onDelete={() => setFileError('')}
-                        sx={{ maxWidth: '100%', overflow: 'hidden' }}
-                    />
-                )}
             </Box>
 
-            {attachments.length > 0 && (
-                <Paper variant="outlined" sx={{ mb: 2 }}>
-                    <List disablePadding>
+            {fileError && (
+                <Chip
+                    label={fileError}
+                    color="error"
+                    size="small"
+                    onDelete={() => setFileError('')}
+                    sx={{
+                        maxWidth: '100%',
+                        overflow: 'hidden',
+                        mb: 1.5
+                    }}
+                />
+            )}
+
+            {attachments.length > 0 ? (
+                <Paper
+                    elevation={0}
+                    sx={{
+                        borderRadius: 2,
+                        backgroundColor: 'rgba(25, 25, 40, 0.5)',
+                        border: '1px solid rgba(255, 255, 255, 0.08)',
+                        overflow: 'hidden',
+                        maxHeight: '120px', // Limit height
+                        overflowY: 'auto' // Add scroll for many attachments
+                    }}
+                >
+                    <List disablePadding dense>
                         {attachments.map((attachment, index) => (
                             <ListItem
                                 key={index}
-                                divider
+                                divider={index < attachments.length - 1}
                                 sx={{
-                                    flexDirection: { xs: 'column', sm: 'row' },
-                                    alignItems: { xs: 'flex-start', sm: 'center' },
-                                    py: { xs: 2, sm: 1 }
+                                    py: 0.75,
+                                    px: 1.5,
+                                    '&:hover': {
+                                        backgroundColor: 'rgba(255, 255, 255, 0.03)',
+                                    },
                                 }}
                             >
+                                <InsertDriveFileOutlinedIcon sx={{ mr: 1, color: 'rgba(255, 255, 255, 0.6)', fontSize: '1rem' }} />
                                 <ListItemText
-                                    primary={attachment.filename}
-                                    secondary={getFileSize(attachment.content)}
-                                    primaryTypographyProps={{
-                                        sx: {
-                                            wordBreak: 'break-all'
+                                    primary={
+                                        <Typography variant="caption" sx={{ fontWeight: 500 }}>
+                                            {attachment.filename} ({getFileSize(attachment.content)})
+                                        </Typography>
+                                    }
+                                    sx={{
+                                        margin: 0,
+                                        '& .MuiTypography-root': {
+                                            wordBreak: 'break-all',
                                         }
                                     }}
-                                    sx={{
-                                        mr: { xs: 0, sm: 2 },
-                                        mb: { xs: 1, sm: 0 },
-                                        width: { xs: '100%', sm: 'auto' }
-                                    }}
                                 />
-                                <ListItemSecondaryAction sx={{
-                                    top: { xs: 'auto', sm: '50%' },
-                                    transform: { xs: 'none', sm: 'translateY(-50%)' },
-                                    right: { xs: 0, sm: 16 },
-                                    bottom: { xs: 8, sm: 'auto' }
-                                }}>
+                                <ListItemSecondaryAction>
                                     <IconButton
                                         edge="end"
-                                        aria-label="delete"
+                                        size="small"
                                         onClick={() => handleRemoveFile(index)}
                                     >
-                                        <DeleteIcon />
+                                        <DeleteIcon fontSize="small" />
                                     </IconButton>
                                 </ListItemSecondaryAction>
                             </ListItem>
                         ))}
                     </List>
                 </Paper>
+            ) : (
+                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.5 }}>
+                    Maximum file size: 10MB. Supported types: PDF, Word, Excel, images, etc.
+                </Typography>
             )}
         </Box>
     );

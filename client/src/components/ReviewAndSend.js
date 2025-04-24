@@ -99,7 +99,44 @@ const ReviewAndSend = ({
 
                     <Typography variant="body2" component="div" sx={{ mt: 2, whiteSpace: 'pre-line' }}>
                         <strong>Template:</strong><br />
-                        <div dangerouslySetInnerHTML={{ __html: emailTemplate }} />
+                        <Box sx={{
+                            maxHeight: '300px',
+                            overflowY: 'auto',
+                            border: '1px solid rgba(0, 0, 0, 0.2)',
+                            borderRadius: '4px',
+                            p: 2,
+                            backgroundColor: '#FFFFFF',
+                            '&::-webkit-scrollbar': {
+                                width: '12px',
+                                backgroundColor: 'rgba(0, 0, 0, 0.1)',
+                            },
+                            '&::-webkit-scrollbar-thumb': {
+                                backgroundColor: 'rgba(0, 0, 150, 0.5)',
+                                borderRadius: '6px',
+                                border: '2px solid rgba(255, 255, 255, 0.5)',
+                            },
+                            '&::-webkit-scrollbar-thumb:hover': {
+                                backgroundColor: 'rgba(0, 0, 200, 0.7)',
+                            }
+                        }}>
+                            <Typography
+                                variant="body1"
+                                component="div"
+                                sx={{
+                                    whiteSpace: 'pre-line',
+                                    lineHeight: 1.7,
+                                    fontSize: '1rem',
+                                    fontFamily: '"Inter", "Roboto", sans-serif',
+                                    letterSpacing: '0.01em',
+                                    color: '#000000',
+                                    '& p': {
+                                        marginBottom: '1em'
+                                    }
+                                }}
+                            >
+                                <div dangerouslySetInnerHTML={{ __html: emailTemplate }} />
+                            </Typography>
+                        </Box>
                     </Typography>
                 </Box>
 
@@ -109,13 +146,13 @@ const ReviewAndSend = ({
                             <strong>Signature:</strong>
                         </Typography>
                         <Box sx={{
-                            border: '1px solid #eee',
+                            border: '1px solid rgba(0, 0, 0, 0.2)',
                             borderRadius: '4px',
                             p: 2,
                             mt: 1,
-                            backgroundColor: '#f9f9f9'
+                            backgroundColor: '#FFFFFF'
                         }}>
-                            <Typography variant="body2" component="div" dangerouslySetInnerHTML={{ __html: signature }} />
+                            <Typography variant="body2" component="div" sx={{ color: '#000000' }} dangerouslySetInnerHTML={{ __html: signature }} />
                         </Box>
                     </Box>
                 )}

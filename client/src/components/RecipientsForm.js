@@ -420,224 +420,283 @@ Alex Johnson,"alex@example.com;alex.personal@gmail.com;alex.work@company.com"`;
 
 	return (
 		<Box>
-			<Typography variant="h6" gutterBottom>
-				Recipients
-			</Typography>
-
-			<Paper elevation={0} sx={{ p: 2, mb: 3, bgcolor: '#f8f8f8' }}>
-				<Typography variant="body2">
-					Add recipients for your email campaign. You can add recipients manually
-					or import from a CSV/JSON file.
-					<br /><br />
+			<Paper
+				elevation={0}
+				sx={{
+					p: 2,
+					mb: 2,
+					borderRadius: 2,
+					backgroundColor: 'rgba(20, 20, 35, 0.4)',
+					border: '1px solid rgba(255, 255, 255, 0.1)',
+					backdropFilter: 'blur(8px)',
+				}}
+			>
+				<Typography variant="body2" sx={{ mb: 1.5 }}>
+					Add recipients for your email campaign. You can add recipients manually or import from a CSV/JSON file.
 					You can add multiple email addresses for a single recipient by separating them with commas or semicolons.
-					The first email will be the primary recipient, and additional emails will be added as BCC recipients.
 				</Typography>
-			</Paper>
 
-			<Box sx={{ mb: 4 }}>
-				<Box sx={{
-					display: 'flex',
-					flexDirection: { xs: 'column', sm: 'row' },
-					gap: 2,
-					mb: 3
-				}}>
+				<Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 1.5, mb: 1.5 }}>
 					<TextField
 						label="Name"
-						variant="outlined"
 						value={name}
 						onChange={(e) => setName(e.target.value)}
 						error={!!nameError}
 						helperText={nameError}
 						fullWidth
-						sx={{ flex: 1 }}
+						size="small"
+						sx={{
+							'& .MuiOutlinedInput-root': {
+								borderRadius: 2
+							}
+						}}
 					/>
 					<TextField
 						label="Email Address(es)"
-						variant="outlined"
 						value={email}
 						onChange={(e) => setEmail(e.target.value)}
 						error={!!emailError}
-						helperText={emailError || "Separate multiple emails with commas or semicolons"}
+						helperText={emailError}
 						fullWidth
-						sx={{ flex: 2 }}
+						size="small"
+						placeholder="Separate multiple emails with commas"
+						sx={{
+							'& .MuiOutlinedInput-root': {
+								borderRadius: 2
+							}
+						}}
 					/>
 				</Box>
 
-				<Box sx={{
-					display: 'flex',
-					flexDirection: { xs: 'column', sm: 'row' },
-					gap: 2,
-					justifyContent: 'flex-start',
-					'& .MuiButton-root': {
-						width: { xs: '100%', sm: 'auto' }
-					}
-				}}>
+				<Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 1.5 }}>
 					<Button
 						variant="contained"
 						color="primary"
 						onClick={handleAddRecipient}
 						startIcon={<AddIcon />}
+						size="small"
+						sx={{
+							borderRadius: 2,
+							background: 'linear-gradient(45deg, #3967d4 10%, #5e90ff 90%)',
+							boxShadow: '0 4px 15px rgba(61, 106, 212, 0.3)',
+							'&:hover': {
+								background: 'linear-gradient(45deg, #3463c9 10%, #4e83f5 90%)',
+								boxShadow: '0 6px 20px rgba(61, 106, 212, 0.4)',
+								transform: 'translateY(-2px)'
+							}
+						}}
 					>
 						Add Recipient
 					</Button>
 
-					<Button
-						variant="outlined"
-						component="label"
-						startIcon={<DownloadIcon sx={{ transform: 'rotate(180deg)' }} />}
-					>
-						Import CSV/JSON
-						<input
-							type="file"
-							hidden
-							accept=".csv,.json"
-							onChange={handleFileUpload}
-						/>
-					</Button>
+					<Box sx={{ display: 'flex', gap: 1.5 }}>
+						<Button
+							variant="outlined"
+							color="primary"
+							component="label"
+							size="small"
+							sx={{
+								borderRadius: 2,
+								borderWidth: '1.5px',
+								'&:hover': {
+									borderWidth: '1.5px',
+								}
+							}}
+						>
+							Import CSV/JSON
+							<input
+								type="file"
+								accept=".csv,.json"
+								style={{ display: 'none' }}
+								onChange={handleFileUpload}
+							/>
+						</Button>
 
-					<Button
-						variant="text"
-						onClick={downloadSampleCSV}
-						startIcon={<DownloadIcon />}
-					>
-						Download Sample CSV
-					</Button>
+						<Button
+							variant="outlined"
+							color="secondary"
+							onClick={downloadSampleCSV}
+							startIcon={<DownloadIcon />}
+							size="small"
+							sx={{
+								borderRadius: 2,
+								borderWidth: '1.5px',
+								'&:hover': {
+									borderWidth: '1.5px',
+									backgroundColor: 'rgba(159, 117, 255, 0.08)'
+								}
+							}}
+						>
+							Download Sample
+						</Button>
+					</Box>
 				</Box>
-			</Box>
+			</Paper>
 
-			<Collapse in={importAlert} sx={{ mb: 3 }}>
+			<Collapse in={importAlert}>
 				<Alert
-					severity="info"
+					severity="success"
+					sx={{ mb: 2 }}
 					onClose={() => setImportAlert(false)}
 				>
-					<Typography variant="body2">
-						Import complete! CSV/JSON data has been added to your recipients list.
-					</Typography>
+					Recipients imported successfully!
 				</Alert>
 			</Collapse>
 
-			<Typography variant="subtitle1" gutterBottom>
+			<Typography variant="subtitle2" sx={{ mb: 1.5, fontWeight: 600 }}>
 				Recipient List ({recipients.length})
 			</Typography>
 
-			{recipients.length > 0 ? (
-				<Paper variant="outlined">
-					<List sx={{
-						maxHeight: { xs: '300px', sm: '400px' },
-						overflow: 'auto'
-					}}>
+			{recipients.length === 0 ? (
+				<Paper
+					elevation={0}
+					sx={{
+						p: 1.5,
+						borderRadius: 2,
+						backgroundColor: 'rgba(20, 20, 35, 0.4)',
+						border: '1px solid rgba(255, 255, 255, 0.08)',
+						textAlign: 'center',
+					}}
+				>
+					<Typography variant="body2" color="text.secondary">
+						No recipients added yet. Add recipients manually or import from a file.
+					</Typography>
+				</Paper>
+			) : (
+				<Paper
+					elevation={0}
+					sx={{
+						borderRadius: 2,
+						backgroundColor: 'rgba(25, 25, 40, 0.5)',
+						border: '1px solid rgba(255, 255, 255, 0.08)',
+						overflow: 'hidden',
+						maxHeight: '200px', // Limit height
+						overflowY: 'auto' // Add scroll for many recipients
+					}}
+				>
+					<List disablePadding dense>
 						{recipients.map((recipient, index) => (
 							<React.Fragment key={index}>
-								<ListItem sx={{
-									py: { xs: 2, sm: 1.5 },
-									flexDirection: { xs: 'column', sm: 'row' },
-									alignItems: { xs: 'flex-start', sm: 'center' },
-									position: 'relative'
-								}}>
+								{index > 0 && <Divider />}
+								<ListItem
+									sx={{
+										py: 1,
+										px: 2,
+										'&:hover': {
+											backgroundColor: 'rgba(255, 255, 255, 0.03)',
+										},
+									}}
+								>
 									<ListItemText
-										primary={recipient.name}
-										secondary={
-											recipient.emails && recipient.emails.length > 1
-												? (
-													<React.Fragment>
-														<span style={{ wordBreak: 'break-all' }}>{recipient.emails[0]}</span> + {recipient.emails.length - 1} more
-													</React.Fragment>
-												)
-												: <span style={{ wordBreak: 'break-all' }}>{recipient.email}</span>
+										primary={
+											<Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
+												{recipient.name}
+											</Typography>
 										}
-										sx={{
-											pr: { xs: 0, sm: 8 },
-											mb: { xs: 2, sm: 0 },
-											'& .MuiTypography-root': {
-												wordBreak: 'break-word'
-											}
-										}}
+										secondary={
+											<Typography variant="body2" color="text.secondary" sx={{ wordBreak: 'break-all' }}>
+												{recipient.email}
+											</Typography>
+										}
 									/>
-									<ListItemSecondaryAction sx={{
-										position: { xs: 'relative', sm: 'absolute' },
-										top: { xs: 'auto', sm: '50%' },
-										transform: { xs: 'none', sm: 'translateY(-50%)' },
-										right: { xs: 0, sm: 16 },
-										display: 'flex',
-										width: { xs: '100%', sm: 'auto' },
-										justifyContent: { xs: 'flex-start', sm: 'flex-end' }
-									}}>
-										<Tooltip title="Edit recipient">
-											<IconButton edge="end" aria-label="edit" onClick={() => handleEditRecipient(index)}>
-												<EditIcon />
+									<ListItemSecondaryAction>
+										<Tooltip title="Edit Recipient">
+											<IconButton edge="end" onClick={() => handleEditRecipient(index)} sx={{ mr: 1 }}>
+												<EditIcon fontSize="small" />
 											</IconButton>
 										</Tooltip>
-										<Tooltip title="Delete recipient">
-											<IconButton edge="end" aria-label="delete" onClick={() => handleRemoveRecipient(index)}>
-												<DeleteIcon />
+										<Tooltip title="Delete Recipient">
+											<IconButton edge="end" onClick={() => handleRemoveRecipient(index)}>
+												<DeleteIcon fontSize="small" />
 											</IconButton>
 										</Tooltip>
 									</ListItemSecondaryAction>
 								</ListItem>
-								{index < recipients.length - 1 && <Divider />}
 							</React.Fragment>
 						))}
 					</List>
 				</Paper>
-			) : (
-				<Typography variant="body2" color="textSecondary">
-					No recipients added yet. Add recipients manually or import from a file.
-				</Typography>
 			)}
 
+			{/* Edit Dialog */}
 			<Dialog
 				open={editDialogOpen}
 				onClose={handleCloseEditDialog}
-				fullWidth
 				maxWidth="sm"
+				fullWidth
 				PaperProps={{
 					sx: {
-						width: '100%',
-						m: { xs: 1, sm: 2, md: 3 },
-						maxHeight: '90vh'
+						borderRadius: 2,
+						backgroundColor: 'rgba(30, 30, 45, 0.95)',
+						backdropFilter: 'blur(10px)',
+						border: '1px solid rgba(255, 255, 255, 0.1)',
 					}
 				}}
-				aria-labelledby="edit-recipient-dialog-title"
-				disableEnforceFocus={false}
-				keepMounted={false}
 			>
-				<DialogTitle id="edit-recipient-dialog-title">Edit Recipient</DialogTitle>
-				<DialogContent>
+				<DialogTitle>Edit Recipient</DialogTitle>
+				<DialogContent dividers>
 					<TextField
 						label="Name"
-						variant="outlined"
-						fullWidth
-						margin="normal"
 						value={editName}
 						onChange={(e) => setEditName(e.target.value)}
 						error={!!editNameError}
 						helperText={editNameError}
-						autoFocus
-						id="edit-recipient-name"
+						fullWidth
+						margin="normal"
+						sx={{
+							mt: 1,
+							'& .MuiOutlinedInput-root': {
+								borderRadius: 2
+							}
+						}}
 					/>
 					<TextField
 						label="Email Address(es)"
-						variant="outlined"
-						fullWidth
-						margin="normal"
 						value={editEmail}
 						onChange={(e) => setEditEmail(e.target.value)}
 						error={!!editEmailError}
-						helperText={editEmailError || "Separate multiple emails with commas or semicolons"}
-						id="edit-recipient-email"
+						helperText={editEmailError}
+						fullWidth
+						margin="normal"
+						placeholder="Separate multiple emails with commas or semicolons"
+						sx={{
+							mt: 2,
+							'& .MuiOutlinedInput-root': {
+								borderRadius: 2
+							}
+						}}
 					/>
 				</DialogContent>
-				<DialogActions sx={{
-					p: 2,
-					flexDirection: { xs: 'column', sm: 'row' },
-					'& > button': {
-						m: 0.5,
-						width: { xs: '100%', sm: 'auto' }
-					}
-				}}>
-					<Button onClick={handleCloseEditDialog}>Cancel</Button>
-					<Button onClick={handleSaveEdit} variant="contained" color="primary">
-						Save Changes
+				<DialogActions sx={{ p: 2 }}>
+					<Button
+						onClick={handleCloseEditDialog}
+						variant="outlined"
+						sx={{
+							borderRadius: 2,
+							borderWidth: '1.5px',
+							'&:hover': {
+								borderWidth: '1.5px',
+							}
+						}}
+					>
+						Cancel
+					</Button>
+					<Button
+						onClick={handleSaveEdit}
+						variant="contained"
+						color="primary"
+						sx={{
+							borderRadius: 2,
+							background: 'linear-gradient(45deg, #3967d4 10%, #5e90ff 90%)',
+							boxShadow: '0 4px 15px rgba(61, 106, 212, 0.3)',
+							'&:hover': {
+								background: 'linear-gradient(45deg, #3463c9 10%, #4e83f5 90%)',
+								boxShadow: '0 6px 20px rgba(61, 106, 212, 0.4)',
+								transform: 'translateY(-2px)'
+							}
+						}}
+					>
+						Save
 					</Button>
 				</DialogActions>
 			</Dialog>

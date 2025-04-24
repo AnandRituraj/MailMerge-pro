@@ -602,7 +602,46 @@ const AIEmailForm = ({
                                 mt: 1
                             }}
                         >
-                            {generatedContent.emailContent}
+                            <Box sx={{
+                                maxHeight: '400px',
+                                overflowY: 'auto',
+                                pr: 1,
+                                border: '1px solid rgba(0, 0, 0, 0.2)',
+                                borderRadius: '4px',
+                                p: 2,
+                                backgroundColor: '#FFFFFF',
+                                color: '#000000',
+                                lineHeight: 1.7,
+                                fontSize: '1rem',
+                                fontFamily: '"Inter", "Roboto", sans-serif',
+                                letterSpacing: '0.01em',
+                                '&::-webkit-scrollbar': {
+                                    width: '12px',
+                                    backgroundColor: 'rgba(0, 0, 0, 0.1)',
+                                },
+                                '&::-webkit-scrollbar-thumb': {
+                                    backgroundColor: 'rgba(0, 0, 150, 0.5)',
+                                    borderRadius: '6px',
+                                    border: '2px solid rgba(255, 255, 255, 0.5)',
+                                },
+                                '&::-webkit-scrollbar-thumb:hover': {
+                                    backgroundColor: 'rgba(0, 0, 200, 0.7)',
+                                }
+                            }}>
+                                <Typography
+                                    variant="body1"
+                                    component="div"
+                                    sx={{
+                                        whiteSpace: 'pre-line',
+                                        '& p': {
+                                            marginBottom: '1em'
+                                        },
+                                        color: '#000000'
+                                    }}
+                                >
+                                    {generatedContent.emailContent}
+                                </Typography>
+                            </Box>
                         </Typography>
                     </Box>
 
@@ -637,12 +676,16 @@ const AIEmailForm = ({
                     </Box>
 
                     {includeSignature && signatureHtml && (
-                        <Box sx={{ mb: 3, p: 2, border: '1px dashed #ccc', borderRadius: 1, backgroundColor: '#f5f5f5' }}>
-                            <Typography variant="subtitle2" gutterBottom>
+                        <Box sx={{ mb: 3, p: 2, border: '1px solid rgba(0, 0, 0, 0.2)', borderRadius: 1, backgroundColor: '#FFFFFF' }}>
+                            <Typography variant="subtitle2" gutterBottom color="black">
                                 Signature Preview:
                             </Typography>
                             <Box
-                                sx={{ pt: 1, borderTop: '1px solid #eee' }}
+                                sx={{
+                                    pt: 1,
+                                    borderTop: '1px solid rgba(0, 0, 0, 0.1)',
+                                    color: '#000000'
+                                }}
                                 dangerouslySetInnerHTML={{
                                     __html: signatureType === 'plain'
                                         ? formatPlainTextSignature(signatureHtml)
@@ -725,11 +768,18 @@ const AIEmailForm = ({
 
                     {signatureType === 'plain' && signatureHtml && (
                         <Box sx={{ mt: 3 }}>
-                            <Typography variant="subtitle2" gutterBottom>
+                            <Typography variant="subtitle2" gutterBottom color="black">
                                 Preview:
                             </Typography>
                             <Box
-                                sx={{ p: 2, border: '1px solid #eee', borderRadius: 1, backgroundColor: '#f9f9f9', mt: 1 }}
+                                sx={{
+                                    p: 2,
+                                    border: '1px solid rgba(0, 0, 0, 0.2)',
+                                    borderRadius: 1,
+                                    backgroundColor: '#FFFFFF',
+                                    color: '#000000',
+                                    mt: 1
+                                }}
                                 dangerouslySetInnerHTML={{ __html: formatPlainTextSignature(signatureHtml) }}
                             />
                         </Box>
