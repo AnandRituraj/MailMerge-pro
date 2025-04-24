@@ -22,6 +22,7 @@ import {
 } from '@mui/material';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import DescriptionIcon from '@mui/icons-material/Description';
+import EditIcon from '@mui/icons-material/Edit';
 import config from '../config';
 import AttachmentsForm from './AttachmentsForm';
 
@@ -86,6 +87,11 @@ const AIEmailForm = ({
     const [signatureHtml, setSignatureHtml] = useState('');
     const [openSignatureDialog, setOpenSignatureDialog] = useState(false);
     const [signatureType, setSignatureType] = useState('plain'); // 'plain' or 'html'
+
+    // Email editing dialog
+    const [openEditEmailDialog, setOpenEditEmailDialog] = useState(false);
+    const [editEmailContent, setEditEmailContent] = useState('');
+    const [editEmailSubject, setEditEmailSubject] = useState('');
 
     // Update formData when selectedRecipient changes
     useEffect(() => {
@@ -167,17 +173,16 @@ const AIEmailForm = ({
             let response;
 
             if (useResumeFile && resumeFile) {
-                // Create FormData for file upload
-                const formDataForUpload = new FormData();
-                formDataForUpload.append('resumeFile', resumeFile);
-                formDataForUpload.append('name', recipientData.name);
-                formDataForUpload.append('email', recipientData.email);
-                formDataForUpload.append('jobDescription', recipientData.jobDescription || '');
-                formDataForUpload.append('companyProfile', recipientData.companyProfile || '');
+                const formData = new FormData();
+                formData.append('resumeFile', resumeFile);
+                formData.append('name', recipientData.name);
+                formData.append('email', recipientData.email);
+                formData.append('jobDescription', recipientData.jobDescription || '');
+                formData.append('companyProfile', recipientData.companyProfile || '');
 
-                response = await fetch(`${config.API_URL}/api/generate-email-with-resume`, {
+                response = await fetch(`${config.API_URL}/api/resume/generate-email-with-resume`, {
                     method: 'POST',
-                    body: formDataForUpload,
+                    body: formData,
                 });
             } else {
                 // Use text resume
@@ -185,7 +190,7 @@ const AIEmailForm = ({
                     throw new Error('Resume content is required.');
                 }
 
-                response = await fetch(`${config.API_URL}/api/generate-email`, {
+                response = await fetch(`${config.API_URL}/api/ai/generate-email`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -309,7 +314,8 @@ const AIEmailForm = ({
                     return {
                         ...recipient,
                         personalizedEmail: generatedEmail.emailContent,
-                        personalizedSubject: generatedEmail.subject
+                        personalizedSubject: generatedEmail.subject,
+                        edited: generatedEmail.edited || false // Track if the email was edited by the user
                     };
                 }
                 return recipient;
@@ -345,6 +351,52 @@ const AIEmailForm = ({
                 subject: recipientsWithEmails[index].subject
             });
         }
+    };
+
+    const handleEditEmail = () => {
+        if (generatedContent) {
+            setEditEmailContent(generatedContent.emailContent);
+            setEditEmailSubject(generatedContent.subject);
+            setOpenEditEmailDialog(true);
+        }
+    };
+
+    const handleSaveEmailEdit = () => {
+        // Update the generated content with the edited version
+        setGeneratedContent({
+            emailContent: editEmailContent,
+            subject: editEmailSubject
+        });
+
+        // If multiple recipients, update just the current one in the array
+        if (recipientsWithEmails.length > 1) {
+            // Find the currently displayed email in the array
+            const currentlyDisplayedEmail = generatedContent;
+            const currentIndex = recipientsWithEmails.findIndex(item =>
+                item.emailContent === currentlyDisplayedEmail.emailContent &&
+                item.subject === currentlyDisplayedEmail.subject);
+
+            if (currentIndex >= 0) {
+                const updatedRecipients = [...recipientsWithEmails];
+                updatedRecipients[currentIndex] = {
+                    ...updatedRecipients[currentIndex],
+                    emailContent: editEmailContent,
+                    subject: editEmailSubject,
+                    edited: true // Mark as edited
+                };
+                setRecipientsWithEmails(updatedRecipients);
+            }
+        } else if (recipientsWithEmails.length === 1) {
+            // Update the single recipient email
+            setRecipientsWithEmails([{
+                ...recipientsWithEmails[0],
+                emailContent: editEmailContent,
+                subject: editEmailSubject,
+                edited: true // Mark as edited
+            }]);
+        }
+
+        setOpenEditEmailDialog(false);
     };
 
     return (
@@ -559,10 +611,20 @@ const AIEmailForm = ({
 
             {generatedContent && (
                 <Paper sx={{ p: 3, mb: 3 }}>
-                    <Typography variant="h6" gutterBottom>
-                        Generated Email
-                        {recipientsWithEmails.length > 1 && " Preview"}
-                    </Typography>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                        <Typography variant="h6">
+                            Generated Email
+                            {recipientsWithEmails.length > 1 && " Preview"}
+                        </Typography>
+                        <Button
+                            variant="outlined"
+                            startIcon={<EditIcon />}
+                            onClick={handleEditEmail}
+                            size="small"
+                        >
+                            Edit Email
+                        </Button>
+                    </Box>
 
                     {recipientsWithEmails.length > 1 && (
                         <Box sx={{ mb: 2, display: 'flex', flexWrap: 'wrap', gap: 1 }}>
@@ -789,6 +851,50 @@ const AIEmailForm = ({
                     <Button onClick={() => setOpenSignatureDialog(false)}>Cancel</Button>
                     <Button onClick={handleSaveSignature} variant="contained" color="primary">
                         Save Signature
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
+            {/* Email Editing Dialog */}
+            <Dialog
+                open={openEditEmailDialog}
+                onClose={() => setOpenEditEmailDialog(false)}
+                fullWidth
+                maxWidth="md"
+                PaperProps={{
+                    sx: {
+                        width: '100%',
+                        m: { xs: 1, sm: 2, md: 3 },
+                        maxHeight: '90vh'
+                    }
+                }}
+                aria-labelledby="edit-email-dialog-title"
+            >
+                <DialogTitle id="edit-email-dialog-title">Edit Email Content</DialogTitle>
+                <DialogContent>
+                    <TextField
+                        fullWidth
+                        label="Subject"
+                        value={editEmailSubject}
+                        onChange={(e) => setEditEmailSubject(e.target.value)}
+                        margin="normal"
+                        variant="outlined"
+                    />
+                    <TextField
+                        fullWidth
+                        label="Email Content"
+                        value={editEmailContent}
+                        onChange={(e) => setEditEmailContent(e.target.value)}
+                        multiline
+                        rows={12}
+                        margin="normal"
+                        variant="outlined"
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setOpenEditEmailDialog(false)}>Cancel</Button>
+                    <Button onClick={handleSaveEmailEdit} variant="contained" color="primary">
+                        Save Changes
                     </Button>
                 </DialogActions>
             </Dialog>

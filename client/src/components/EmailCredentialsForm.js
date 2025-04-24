@@ -88,7 +88,7 @@ const EmailCredentialsForm = ({ emailConfig, setEmailData }) => {
 		setTestStatus({ status: 'testing', message: 'Testing connection...' });
 
 		try {
-			const response = await fetch(`${config.API_URL}/api/test-email-connection`, {
+			const response = await fetch(`${config.API_URL}/api/email/test-email-connection`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',

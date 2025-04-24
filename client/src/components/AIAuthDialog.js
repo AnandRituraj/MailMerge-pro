@@ -29,7 +29,7 @@ const AIAuthDialog = ({ open, onClose, onAuthenticate }) => {
         setError('');
 
         try {
-            const response = await fetch(`${config.API_URL}/api/validate-ai-access`, {
+            const response = await fetch(`${config.API_URL}/api/auth/validate-ai-access`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

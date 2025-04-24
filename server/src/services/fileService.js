@@ -1,15 +1,26 @@
+/**
+ * @file fileService.js
+ * @description File handling service for the application.
+ * 
+ * This service handles:
+ * - File upload configuration using multer
+ * - PDF processing and text extraction
+ * - File storage management and cleanup
+ * - File validation and security
+ * 
+ * The service implements proper file handling procedures,
+ * size limits, file type restrictions, and cleanup operations
+ * to ensure secure and efficient file processing.
+ */
+
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
-import { fileURLToPath } from 'url';
 import { PDFDocument } from 'pdf-lib';
-
-// Get current directory
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import config from '../config/config.js';
 
 // Create uploads directory if it doesn't exist
-const uploadsDir = path.join(__dirname, '../../uploads');
+const uploadsDir = config.paths.uploadsDir;
 if (!fs.existsSync(uploadsDir)) {
     fs.mkdirSync(uploadsDir, { recursive: true });
 }

@@ -287,7 +287,7 @@ const AIRecipientsUploader = ({
         formData.append('resume', file);
 
         try {
-            const response = await axios.post(`${config.API_URL}/api/upload-resume`, formData, {
+            const response = await axios.post(`${config.API_URL}/api/resume/upload-resume`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },

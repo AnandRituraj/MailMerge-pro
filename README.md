@@ -61,19 +61,30 @@ mailmerge-pro/
 │   ├── src/              # Source files
 │   │   ├── components/   # React components
 │   │   ├── App.js        # Main application component
-│   │   └── index.js      # Entry point
+│   │   ├── index.js      # Entry point
+│   │   ├── theme.js      # Theme configuration
+│   │   └── config.js     # Application configuration
 │   └── package.json      # Frontend dependencies
 │
 ├── server/               # Backend Node.js application
 │   ├── src/              # Source files
-│   │   ├── utils/        # Utility functions
-│   │   │   ├── emailUtils.js     # Email functionality
-│   │   │   ├── openaiService.js  # AI email generation
-│   │   │   └── fileUtils.js      # File handling utilities
-│   │   └── index.js      # Express server and API endpoints
-│   ├── uploads/          # Temporary storage for uploaded files
+│   │   ├── config/       # Configuration files
+│   │   ├── controllers/  # Route controllers
+│   │   ├── middleware/   # Express middleware
+│   │   ├── routes/       # API routes
+│   │   ├── services/     # Business logic services
+│   │   │   ├── emailService.js  # Email sending service
+│   │   │   ├── fileService.js   # File handling utilities
+│   │   │   ├── openaiService.js # Re-exports from openai folder
+│   │   │   └── openai/          # OpenAI service components
+│   │   │       ├── client.js    # OpenAI client initialization
+│   │   │       ├── index.js     # Main entry point
+│   │   │       ├── parser.js    # Response parsing
+│   │   │       └── prompts.js   # Prompt templates
+│   │   └── index.js      # Express server entry point
 │   └── package.json      # Backend dependencies
 │
+├── uploads/              # Temporary storage for uploaded files
 └── .gitignore            # Git ignore file
 ```
 

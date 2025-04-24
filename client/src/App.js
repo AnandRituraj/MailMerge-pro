@@ -131,7 +131,7 @@ function App() {
 	const handleSendEmails = async () => {
 		setLoading(true);
 		try {
-			const response = await fetch(`${config.API_URL}/api/send-emails`, {
+			const response = await fetch(`${config.API_URL}/api/email/send-emails`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',

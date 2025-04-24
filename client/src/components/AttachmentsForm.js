@@ -10,6 +10,7 @@ import {
     IconButton,
     Paper,
     Chip,
+    Alert
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
@@ -23,8 +24,8 @@ const AttachmentsForm = ({
 }) => {
     const [fileError, setFileError] = useState('');
 
-    // Maximum file size (10MB)
-    const MAX_FILE_SIZE = 10 * 1024 * 1024;
+    // Maximum file size (5MB to be safer)
+    const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
     const handleFileChange = (event) => {
         const files = event.target.files;
@@ -36,37 +37,70 @@ const AttachmentsForm = ({
         const newAttachments = Array.from(files).map(file => {
             // Check file size
             if (file.size > MAX_FILE_SIZE) {
-                setFileError(`File ${file.name} exceeds 10MB limit`);
+                setFileError(`File ${file.name} exceeds 5MB limit. Email attachments should be kept small.`);
                 return null;
             }
 
-            return new Promise((resolve) => {
+            return new Promise((resolve, reject) => {
                 const reader = new FileReader();
+
                 reader.onload = (e) => {
-                    resolve({
-                        filename: file.name,
-                        content: e.target.result.split(',')[1], // Get base64 data without prefix
-                        contentType: file.type,
-                        encoding: 'base64'
-                    });
+                    try {
+                        // Get base64 data without prefix (data:image/jpeg;base64,)
+                        const fullResult = e.target.result;
+                        const contentType = file.type || 'application/octet-stream';
+                        const base64Prefix = `data:${contentType};base64,`;
+
+                        // Make sure we have a proper base64 string
+                        let content;
+                        if (fullResult.startsWith(base64Prefix)) {
+                            content = fullResult.substring(base64Prefix.length);
+                        } else {
+                            content = fullResult;
+                        }
+
+                        resolve({
+                            filename: file.name,
+                            content: content,
+                            contentType: contentType,
+                            encoding: 'base64',
+                            size: file.size
+                        });
+                    } catch (error) {
+                        console.error('Error processing attachment:', error);
+                        setFileError(`Error processing file ${file.name}: ${error.message}`);
+                        reject(error);
+                    }
                 };
+
+                reader.onerror = (error) => {
+                    console.error('Error reading file:', error);
+                    setFileError(`Error reading file ${file.name}`);
+                    reject(error);
+                };
+
                 reader.readAsDataURL(file);
             });
-        }).filter(Boolean); // Remove nulls (files that were too large)
+        }).filter(Boolean);
 
         if (newAttachments.length) {
-            Promise.all(newAttachments).then(processedAttachments => {
-                if (onAttachmentUpload) {
-                    // Use centralized handler if provided
-                    onAttachmentUpload(processedAttachments);
-                } else if (setEmailData) {
-                    // Fallback to direct state update
-                    setEmailData(prev => ({
-                        ...prev,
-                        attachments: [...prev.attachments, ...processedAttachments]
-                    }));
-                }
-            });
+            Promise.all(newAttachments)
+                .then(processedAttachments => {
+                    if (onAttachmentUpload) {
+                        // Use centralized handler if provided
+                        onAttachmentUpload(processedAttachments);
+                    } else if (setEmailData) {
+                        // Fallback to direct state update
+                        setEmailData(prev => ({
+                            ...prev,
+                            attachments: [...prev.attachments, ...processedAttachments]
+                        }));
+                    }
+                })
+                .catch(error => {
+                    console.error('Error processing attachments:', error);
+                    setFileError('Failed to process attachments. Please try again with smaller files.');
+                });
         }
     };
 
@@ -81,124 +115,93 @@ const AttachmentsForm = ({
                 attachments: prev.attachments.filter((_, i) => i !== index)
             }));
         }
+
+        // Clear any previous errors when removing files
+        setFileError('');
     };
 
-    const getFileSize = (base64String) => {
-        // Calculate size of base64 string in bytes
-        const padding = base64String.endsWith('==') ? 2 : base64String.endsWith('=') ? 1 : 0;
-        const size = Math.floor((base64String.length * 3) / 4) - padding;
-
-        // Format as KB or MB
-        if (size > 1024 * 1024) {
-            return `${(size / (1024 * 1024)).toFixed(2)} MB`;
-        } else {
-            return `${(size / 1024).toFixed(2)} KB`;
+    const getFileSize = (attachment) => {
+        // Use the stored size if available
+        if (attachment.size) {
+            const sizeInKB = attachment.size / 1024;
+            return sizeInKB >= 1024
+                ? `${(sizeInKB / 1024).toFixed(2)} MB`
+                : `${sizeInKB.toFixed(2)} KB`;
         }
+
+        // Fallback: calculate from base64 content
+        if (attachment.content) {
+            // Calculate size of base64 string in bytes
+            const padding = attachment.content.endsWith('==') ? 2 : attachment.content.endsWith('=') ? 1 : 0;
+            const size = Math.floor((attachment.content.length * 3) / 4) - padding;
+
+            // Format as KB or MB
+            if (size > 1024 * 1024) {
+                return `${(size / (1024 * 1024)).toFixed(2)} MB`;
+            } else {
+                return `${(size / 1024).toFixed(2)} KB`;
+            }
+        }
+
+        return 'Unknown size';
     };
 
     return (
-        <Box>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                <Typography variant="subtitle2" fontWeight="500">
-                    Attachments
-                </Typography>
-
-                <Button
-                    variant="contained"
-                    component="label"
-                    startIcon={<AttachFileIcon />}
-                    size="small"
-                    sx={{
-                        borderRadius: 2,
-                        background: 'linear-gradient(45deg, #3967d4 10%, #5e90ff 90%)',
-                        boxShadow: '0 2px 10px rgba(61, 106, 212, 0.3)',
-                        '&:hover': {
-                            background: 'linear-gradient(45deg, #3463c9 10%, #4e83f5 90%)',
-                            boxShadow: '0 4px 15px rgba(61, 106, 212, 0.4)',
-                            transform: 'translateY(-1px)'
-                        }
-                    }}
-                >
-                    Add Attachments
-                    <input
-                        type="file"
-                        hidden
-                        multiple
-                        onChange={handleFileChange}
-                    />
-                </Button>
-            </Box>
+        <Box sx={{ mt: 2 }}>
+            <Typography variant="subtitle2" gutterBottom>
+                Attachments
+            </Typography>
 
             {fileError && (
-                <Chip
-                    label={fileError}
-                    color="error"
-                    size="small"
-                    onDelete={() => setFileError('')}
-                    sx={{
-                        maxWidth: '100%',
-                        overflow: 'hidden',
-                        mb: 1.5
-                    }}
-                />
+                <Alert severity="error" sx={{ mb: 2 }}>
+                    {fileError}
+                </Alert>
             )}
 
-            {attachments.length > 0 ? (
-                <Paper
-                    elevation={0}
-                    sx={{
-                        borderRadius: 2,
-                        backgroundColor: 'rgba(25, 25, 40, 0.5)',
-                        border: '1px solid rgba(255, 255, 255, 0.08)',
-                        overflow: 'hidden',
-                        maxHeight: '120px', // Limit height
-                        overflowY: 'auto' // Add scroll for many attachments
-                    }}
-                >
-                    <List disablePadding dense>
+            <Button
+                variant="outlined"
+                component="label"
+                startIcon={<AttachFileIcon />}
+                sx={{
+                    mb: 2,
+                    borderRadius: 2,
+                }}
+            >
+                Add Attachment
+                <input
+                    type="file"
+                    hidden
+                    multiple
+                    onChange={handleFileChange}
+                />
+            </Button>
+
+            {attachments.length > 0 && (
+                <Paper variant="outlined" sx={{ mt: 1, p: 1, backgroundColor: 'rgba(255, 255, 255, 0.05)' }}>
+                    <List dense>
                         {attachments.map((attachment, index) => (
-                            <ListItem
-                                key={index}
-                                divider={index < attachments.length - 1}
-                                sx={{
-                                    py: 0.75,
-                                    px: 1.5,
-                                    '&:hover': {
-                                        backgroundColor: 'rgba(255, 255, 255, 0.03)',
-                                    },
-                                }}
-                            >
-                                <InsertDriveFileOutlinedIcon sx={{ mr: 1, color: 'rgba(255, 255, 255, 0.6)', fontSize: '1rem' }} />
+                            <ListItem key={index}>
+                                <InsertDriveFileOutlinedIcon sx={{ mr: 1, color: 'text.secondary' }} />
                                 <ListItemText
-                                    primary={
-                                        <Typography variant="caption" sx={{ fontWeight: 500 }}>
-                                            {attachment.filename} ({getFileSize(attachment.content)})
-                                        </Typography>
+                                    primary={attachment.filename}
+                                    secondary={
+                                        <Chip
+                                            label={getFileSize(attachment)}
+                                            size="small"
+                                            variant="outlined"
+                                            sx={{ fontSize: '0.7rem' }}
+                                        />
                                     }
-                                    sx={{
-                                        margin: 0,
-                                        '& .MuiTypography-root': {
-                                            wordBreak: 'break-all',
-                                        }
-                                    }}
                                 />
                                 <ListItemSecondaryAction>
-                                    <IconButton
-                                        edge="end"
-                                        size="small"
-                                        onClick={() => handleRemoveFile(index)}
-                                    >
-                                        <DeleteIcon fontSize="small" />
+                                    <IconButton edge="end" onClick={() => handleRemoveFile(index)}>
+                                        <DeleteIcon />
                                     </IconButton>
                                 </ListItemSecondaryAction>
                             </ListItem>
                         ))}
                     </List>
                 </Paper>
-            ) : (
-                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.5 }}>
-                    Maximum file size: 10MB. Supported types: PDF, Word, Excel, images, etc.
-                </Typography>
             )}
         </Box>
     );
