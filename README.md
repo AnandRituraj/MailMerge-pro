@@ -14,7 +14,7 @@ The application is now deployed and available online:
 ### Standard Email Mode
 
 - Add recipients individually or upload CSV/JSON file with recipient information
-- Create email templates with dynamic placeholders (`{name}`)
+- Create email templates with dynamic placeholders (`{name}`, `{company}`, etc.)
 - Add multiple email addresses per recipient (first as main recipient, others as BCC)
 - Set up plain text or HTML email signatures
 - Auto-formatting of URLs and email addresses into clickable links
@@ -257,6 +257,8 @@ This application prioritizes security by:
 - Not saving sent emails or their content
 - Temporarily processing and immediately deleting uploaded PDF resumes
 - Password-protecting access to the AI features
+- Rate limiting to prevent abuse
+- Input validation to prevent injection attacks
 
 ## AI Mode Authentication
 
@@ -296,6 +298,24 @@ The PDF processing happens server-side for enhanced security. Your uploaded resu
 - Used to generate the email
 - Automatically deleted after processing
 
+## Contributing
+
+We welcome contributions to improve MailMerge Pro! If you'd like to contribute:
+
+1. Fork the repository
+2. Create a new branch (`git checkout -b feature/amazing-feature`)
+3. Make your changes
+4. Run tests to ensure functionality
+5. Commit your changes (`git commit -m 'Add some amazing feature'`)
+6. Push to the branch (`git push origin feature/amazing-feature`)
+7. Open a Pull Request
+
+Please ensure your code follows the existing style and includes appropriate tests.
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
 ## Troubleshooting
 
 ### Email Connection Issues
@@ -318,3 +338,7 @@ The PDF processing happens server-side for enhanced security. Your uploaded resu
 - **PDF Processing Errors**: Ensure your PDF is not password-protected and contains selectable text
 - **AI Mode Access**: If you cannot access AI mode, ensure the password is correctly set in environment variables
 - **OpenAI Errors**: Check that your API key is valid and has sufficient credits
+
+## Support
+
+If you encounter any issues or have questions, please open an issue on GitHub or contact the maintainer.
