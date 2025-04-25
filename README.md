@@ -7,7 +7,7 @@ A professional web application for sending personalized emails to multiple recip
 The application is now deployed and available online:
 
 - **Frontend**: https://mailmerge-pro.vercel.app/ (This is the only URL you need to access the application)
-- **Backend**: Hosted on Render (not directly accessible - used by the frontend)
+- **Backend**: Hosted on Render (https://mailmerge-pro.onrender.com - used by the frontend)
 
 ## Features
 
@@ -41,15 +41,16 @@ The application is now deployed and available online:
 
 - **Frontend**:
   - React 18
-  - Material UI v5
+  - Material UI v5 with custom theming
   - Responsive design with flexbox layouts
   - Axios for API requests
+  - Papa Parse for CSV parsing
 - **Backend**:
-  - Node.js
-  - Express
+  - Node.js with Express
   - Nodemailer for email sending
-  - OpenAI API for AI email generation
-  - PDF parsing for resume extraction
+  - OpenAI API integration (v4.95.1)
+  - PDF processing with pdf-lib and pdfjs-dist
+  - Multer for file uploads
   - CORS for cross-origin support
 
 ## Project Structure
@@ -60,17 +61,18 @@ mailmerge-pro/
 │   ├── public/           # Static files
 │   ├── src/              # Source files
 │   │   ├── components/   # React components
+│   │   ├── contexts/     # React contexts for state management
 │   │   ├── App.js        # Main application component
 │   │   ├── index.js      # Entry point
-│   │   ├── theme.js      # Theme configuration
-│   │   └── config.js     # Application configuration
+│   │   ├── theme.js      # Material UI theme configuration
+│   │   └── config.js     # Environment configuration
 │   └── package.json      # Frontend dependencies
 │
 ├── server/               # Backend Node.js application
 │   ├── src/              # Source files
 │   │   ├── config/       # Configuration files
 │   │   ├── controllers/  # Route controllers
-│   │   ├── middleware/   # Express middleware
+│   │   ├── middleware/   # Express middleware (including CORS)
 │   │   ├── routes/       # API routes
 │   │   ├── services/     # Business logic services
 │   │   │   ├── emailService.js  # Email sending service
@@ -236,7 +238,7 @@ To send emails using your Gmail account, you'll need to create an App Password:
 The application is deployed using:
 
 - **Frontend**: [Vercel](https://vercel.com) - Provides continuous deployment from the main branch
-- **Backend**: [Render](https://render.com) - Hosts the Node.js server
+- **Backend**: [Render](https://render.com) - Hosts the Node.js server at https://mailmerge-pro.onrender.com
 
 ### Deployment Configuration
 
@@ -294,27 +296,13 @@ The application supports uploading PDF resumes:
 
 The PDF processing happens server-side for enhanced security. Your uploaded resume will be:
 
-- Processed to extract the text content
+- Processed to extract the text content using pdfjs-dist
 - Used to generate the email
 - Automatically deleted after processing
 
-## Contributing
-
-We welcome contributions to improve MailMerge Pro! If you'd like to contribute:
-
-1. Fork the repository
-2. Create a new branch (`git checkout -b feature/amazing-feature`)
-3. Make your changes
-4. Run tests to ensure functionality
-5. Commit your changes (`git commit -m 'Add some amazing feature'`)
-6. Push to the branch (`git push origin feature/amazing-feature`)
-7. Open a Pull Request
-
-Please ensure your code follows the existing style and includes appropriate tests.
-
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License.
 
 ## Troubleshooting
 
@@ -341,4 +329,4 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Support
 
-If you encounter any issues or have questions, please open an issue on GitHub or contact the maintainer.
+If you encounter any issues or have questions, please contact the maintainer.
