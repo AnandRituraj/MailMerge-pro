@@ -30,11 +30,7 @@ const EmailCredentialsForm = ({ emailConfig, setEmailData }) => {
 	const [credentialsSaved, setCredentialsSaved] = useState(emailConfig?.credentialsSaved === true);
 
 	useEffect(() => {
-		console.log('EmailCredentialsForm initialized with:', {
-			emailConfig,
-			credentialsSaved: emailConfig?.credentialsSaved,
-			stateCredentialsSaved: credentialsSaved
-		});
+		// Remove console.log that was displaying sensitive information
 	}, [emailConfig, credentialsSaved]);
 
 	useEffect(() => {
@@ -77,7 +73,7 @@ const EmailCredentialsForm = ({ emailConfig, setEmailData }) => {
 				emailConfig: { email, password, service, credentialsSaved: true },
 			}));
 			setCredentialsSaved(true);
-			console.log('Credentials saved, state updated:', { email, service, credentialsSaved: true });
+			// Remove console.log that was displaying email and credentials
 		}
 	};
 
