@@ -190,9 +190,15 @@ npm start
 
 3. **Generate AI Email**:
 
-   - Select a recipient from the list
-   - Click "Generate Email" to create a personalized job application email
-   - Verify and edit the generated email and subject if needed
+   - For multiple recipients:
+     - Toggle "Generate personalized emails for all recipients" (enabled by default)
+     - Click "Generate Personalized Emails for All Recipients" to create unique emails for each recipient
+     - Review and optionally edit any of the generated emails
+   - Or for individual recipients:
+     - Disable the batch generation toggle
+     - Select a recipient from the list
+     - Click "Generate AI Email" to create a personalized job application email for just that recipient
+   - Verify and edit any generated email and subject if needed
    - Add attachments (your resume, cover letter, etc.)
 
 4. **Review and Send**:
