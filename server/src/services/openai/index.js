@@ -36,7 +36,7 @@ export async function generateEmail(data) {
 					content: prompt
 				}
 			],
-			temperature: 0.7,
+
 		});
 
 		const content = response.choices[0].message.content.trim();
