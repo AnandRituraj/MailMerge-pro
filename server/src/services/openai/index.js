@@ -23,23 +23,17 @@ export async function generateEmail(data) {
 		// Get system message
 		const systemMessage = getSystemMessage();
 
-		// Make API call
-		const response = await openai.chat.completions.create({
+		// Make API call using Responses API (required for newer models like gpt-5-mini)
+		const response = await openai.responses.create({
 			model: "gpt-5-mini",
-			messages: [
-				{
-					role: "system",
-					content: systemMessage
-				},
-				{
-					role: "user",
-					content: prompt
-				}
-			],
-
+			input: [
+				{ role: "system", content: systemMessage },
+				{ role: "user", content: prompt }
+			]
 		});
 
-		const content = response.choices[0].message.content.trim();
+		// Prefer Responses API output, fall back to Chat Completions shape just in case
+		const content = (response.output_text || response.choices?.[0]?.message?.content || "").trim();
 
 		// Parse response
 		return parseEmailResponse(content);
