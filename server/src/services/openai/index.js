@@ -13,38 +13,38 @@ import { parseEmailResponse } from './parser.js';
  * @returns {Promise<Object>} - Object containing emailContent and subject
  */
 export async function generateEmail(data) {
-    try {
-        // Initialize OpenAI client
-        const openai = getOpenAIClient();
+	try {
+		// Initialize OpenAI client
+		const openai = getOpenAIClient();
 
-        // Create prompt
-        const prompt = createEmailPrompt(data);
+		// Create prompt
+		const prompt = createEmailPrompt(data);
 
-        // Get system message
-        const systemMessage = getSystemMessage();
+		// Get system message
+		const systemMessage = getSystemMessage();
 
-        // Make API call
-        const response = await openai.chat.completions.create({
-            model: "gpt-4.1-mini",
-            messages: [
-                {
-                    role: "system",
-                    content: systemMessage
-                },
-                {
-                    role: "user",
-                    content: prompt
-                }
-            ],
-            temperature: 0.7,
-        });
+		// Make API call
+		const response = await openai.chat.completions.create({
+			model: "gpt-5-mini",
+			messages: [
+				{
+					role: "system",
+					content: systemMessage
+				},
+				{
+					role: "user",
+					content: prompt
+				}
+			],
+			temperature: 0.7,
+		});
 
-        const content = response.choices[0].message.content.trim();
+		const content = response.choices[0].message.content.trim();
 
-        // Parse response
-        return parseEmailResponse(content);
-    } catch (error) {
-        console.error('Error generating email:', error);
-        throw new Error(`Failed to generate email: ${error.message}`);
-    }
+		// Parse response
+		return parseEmailResponse(content);
+	} catch (error) {
+		console.error('Error generating email:', error);
+		throw new Error(`Failed to generate email: ${error.message}`);
+	}
 }
